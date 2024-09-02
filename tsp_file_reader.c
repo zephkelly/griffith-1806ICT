@@ -61,7 +61,8 @@ void read_tsp_file(const char* filename, TSPProblem* problem)
             }
             else if (strncmp(key, "COMMENT", 7) == 0)
             {
-                sscanf(value, "%99s", problem->comment);
+                strncpy(problem->comment, value, sizeof(problem->comment) - 1);
+                problem->comment[sizeof(problem->comment) - 1] = '\0';
             }
             else if (strncmp(key, "TYPE", 4) == 0)
             {
