@@ -83,6 +83,8 @@ void read_tsp_file(const char* filename, TSPProblem* problem)
         }
         else if (reading_nodes && node_count < problem->dimension)
         {
+            City* city = &problem->cities[node_count];
+            sscanf(formatted_line, "%d %lf %lf", &city->id, &city->x, &city->y);
             node_count++;
         }
     }

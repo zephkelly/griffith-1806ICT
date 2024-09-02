@@ -1,0 +1,1 @@
+gcc tsp_solver.c tsp_file_reader.c -o tsp_solver
