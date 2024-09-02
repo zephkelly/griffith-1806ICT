@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <ctype.h>
 
 #define MAX_LINE_LENGTH 1000
 
@@ -22,6 +23,7 @@ void read_tsp_file(const char* filename, TSPProblem* problem)
 
     while (fgets(line, sizeof(line), input_file))
     {
+
         if (strncmp(line, "EOF", 3) == 0)
         {
             break;
@@ -59,4 +61,22 @@ void read_tsp_file(const char* filename, TSPProblem* problem)
 
     problem->read_nodes = current_node;
     fclose(input_file);
+}
+
+// https://stackoverflow.com/questions/122616/how-do-i-trim-leading-trailing-whitespace-in-a-standard-way
+char *trimwhitespace(char *str)
+{
+  char *end;
+
+  while(isspace((unsigned char)*str)) str++;
+
+  if(*str == 0)
+    return str;
+
+  end = str + strlen(str) - 1;
+  while(end > str && isspace((unsigned char)*end)) end--;
+
+  end[1] = '\0';
+
+  return str;
 }
