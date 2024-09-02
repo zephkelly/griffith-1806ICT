@@ -14,6 +14,7 @@ typedef struct {
     int dimension;
     char edge_weight_type[20];
     City cities[1000];
+    int read_nodes;
 } TSPProblem;
 
 void read_tsp_file(const char* filename, TSPProblem* tsp);
