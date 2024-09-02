@@ -27,8 +27,7 @@ int main(int argc, char* argv[])
     int cities_to_print = (problem.read_nodes < 10) ? problem.read_nodes : 10;
     for (int i = 0; i < cities_to_print; i++)
     {
-        printf("City %d: ID = %d, X = %.2f, Y = %.2f\n", 
-               i+1, problem.cities[i].id, problem.cities[i].x, problem.cities[i].y);
+        printf("City %d: ID = %d, X = %.2f, Y = %.2f\n", i+1, problem.cities[i].id, problem.cities[i].x, problem.cities[i].y);
     }
 
     return 0;
