@@ -1,6 +1,6 @@
 #include "solver_factory.h"
-#include "greedy-3opt.h"
-#include "nearest_neighbour.h"
+#include "solvers/greedy-3opt.h"
+#include "solvers/nearest_neighbour.h"
 
 Solver* create_solver(SolverType type) {
     switch (type) {
