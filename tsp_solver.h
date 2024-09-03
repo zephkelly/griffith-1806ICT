@@ -11,7 +11,8 @@ struct Solver {
 };
 
 typedef enum {
-    GREEDY_THREE_OPT,
+    NEAREST_NEIGHBOUR,
+    GREEDY_THREE_OPT
 } SolverType;
 
 #endif
