@@ -24,7 +24,7 @@ char *trim_whitespace(char *str)
     return str;
 }
 
-void read_tsp_file(const char* filename, TSPProblem* problem)
+void read_tsp_file(const char* filename, TSPData* problem)
 {
     FILE* input_file = fopen(filename, "r");
 

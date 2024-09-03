@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
     const char* filename = argv[1];
     int time_limit = atoi(argv[2]);
 
-    TSPInformation problem;
+    TSPData problem;
     read_tsp_file(filename, &problem);
 
     printf("Problem Name: %s\n", problem.name);

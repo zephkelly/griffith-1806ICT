@@ -3,6 +3,6 @@
 
 #include "tsp_structures.h"
 
-void read_tsp_file(const char* filename, TSPProblem* tsp);
+void read_tsp_file(const char* filename, TSPData* tsp);
 
 #endif

@@ -6,8 +6,12 @@
 typedef struct Solver Solver;
 
 struct Solver {
-    Tour (*solve)(Solver *self, TSPInformation *problem, int time_limit);
+    Tour (*solve)(Solver *self, TSPData *problem, int time_limit);
     void (*free)(Solver *self);
 };
+
+typedef enum {
+    GREEDY_THREE_OPT,
+} SolverType;
 
 #endif

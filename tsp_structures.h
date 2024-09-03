@@ -15,7 +15,7 @@ typedef struct {
     char edge_weight_type[20];
     City cities[1000];
     int read_nodes;
-} TSPInformation;
+} TSPData;
 
 typedef struct {
     char name[50];
