@@ -39,6 +39,7 @@ int main(int argc, char* argv[])
 void solve_tsp(TSPData* problem, int time_limit, SolverType solver_type)
 {
     Solver* solver = create_solver(solver_type);
+    solver->solve(solver, problem, time_limit);
 }
 
 void free_tsp_data(TSPData* problem)

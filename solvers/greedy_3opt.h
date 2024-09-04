@@ -9,4 +9,6 @@ typedef struct Greedy3OptSolver {
 
 Solver* create_greedy_3opt_solver();
 
+void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit);
+
 #endif

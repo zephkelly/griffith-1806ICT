@@ -8,7 +8,7 @@ typedef struct {
 } City;
 
 typedef struct {
-    int nearest_city;
+    int city_index;
     double squared_distance;
 } NearestCityInfo;
 
