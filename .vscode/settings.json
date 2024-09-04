@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "stdlib.h": "c",
+        "stdbool.h": "c",
+        "tsp_file_reader.h": "c",
+        "greedy_3opt.h": "c"
+    }
+}
