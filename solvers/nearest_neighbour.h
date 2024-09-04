@@ -3,6 +3,10 @@
 
 #include "../tsp_solver.h"
 
+typedef struct NearestNeighbourSolver {
+    Solver base;
+} NearestNeighbourSolver;
+
 Solver* create_nearest_neighbour_solver();
 
 #endif
