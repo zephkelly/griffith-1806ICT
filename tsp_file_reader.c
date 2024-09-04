@@ -38,6 +38,9 @@ void read_tsp_file(const char* filename, TSPData* problem)
     bool reading_nodes = false;
     int node_count = 0;
 
+    problem->dimension = 0;
+    problem->cities = NULL;
+
     while (fgets(line, sizeof(line), input_file))
     {
         char* formatted_line = trim_whitespace(line);
@@ -71,6 +74,14 @@ void read_tsp_file(const char* filename, TSPData* problem)
             else if (strncmp(key, "DIMENSION", 9) == 0)
             {
                 sscanf(value, "%d", &problem->dimension);
+
+                problem->cities = (City*)malloc(problem->dimension * sizeof(City));
+                if (problem->cities == NULL)
+                {
+                    printf("Failed to allocate memory for cities\n");
+                    fclose(input_file);
+                    exit(1);
+                }
             }
             else if (strncmp(key, "EDGE_WEIGHT_TYPE", 16) == 0)
             {

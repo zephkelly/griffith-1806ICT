@@ -13,7 +13,7 @@ typedef struct {
     char type[20];
     int dimension;
     char edge_weight_type[20];
-    City cities[1000];
+    City* cities;
     int read_nodes;
 } TSPData;
 
