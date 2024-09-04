@@ -1,5 +1,5 @@
 #include "solver_factory.h"
-#include "solvers/greedy-3opt.h"
+#include "solvers/greedy_3opt.h"
 #include "solvers/nearest_neighbour.h"
 
 Solver* create_solver(SolverType type) {

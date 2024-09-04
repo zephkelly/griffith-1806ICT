@@ -1,4 +1,4 @@
-#include "greedy-3opt.h"
+#include "greedy_3opt.h"
 #include <stdlib.h>
 #include <stdio.h>
 

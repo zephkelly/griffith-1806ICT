@@ -8,9 +8,8 @@
 
 int test_tsp_file(const char* filename)
 {
-    TSPProblem problem = {0};
+    TSPData problem = {0};
     read_tsp_file(filename, &problem);
-
 
     if (problem.name[0] && problem.type[0] && problem.dimension > 0 && problem.edge_weight_type[0] && problem.read_nodes > 0)
     {
