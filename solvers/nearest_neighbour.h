@@ -9,4 +9,6 @@ typedef struct NearestNeighbourSolver {
 
 Solver* create_nearest_neighbour_solver();
 
+void find_distances_nearest_neighbour(Solver *self, TSPData *problem);
+
 #endif

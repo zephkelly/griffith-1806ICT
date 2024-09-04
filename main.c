@@ -36,4 +36,5 @@ int main(int argc, char* argv[])
 void solve_tsp(TSPData* problem, int time_limit, SolverType solver_type)
 {
     Solver* solver = create_solver(solver_type);
+    solver->find_distances(solver, problem);
 }

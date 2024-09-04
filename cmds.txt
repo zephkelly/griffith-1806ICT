@@ -1,1 +1,1 @@
-gcc main.c solver_factory.c tsp_file_reader.c ./solvers/nearest_neighbour.c ./solvers/greedy_3opt.c -o tsp_solver
+gcc main.c solver_factory.c tsp_file_reader.c tsp_utils.c ./solvers/nearest_neighbour.c ./solvers/greedy_3opt.c -o tsp_solver -lm

@@ -1,4 +1,5 @@
 #include "tsp_utils.h"
+#include <math.h>
 
 int calculate_squared_distance(const City *city1, const City *city2)
 {
