@@ -76,6 +76,7 @@ void read_tsp_file(const char* filename, TSPData* problem)
                 sscanf(value, "%d", &problem->dimension);
 
                 problem->cities = (City*)malloc(problem->dimension * sizeof(City));
+                
                 if (problem->cities == NULL)
                 {
                     printf("Failed to allocate memory for cities\n");

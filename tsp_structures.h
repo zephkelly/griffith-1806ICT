@@ -8,6 +8,11 @@ typedef struct {
 } City;
 
 typedef struct {
+    int nearest_city;
+    double squared_distance;
+} NearestCityInfo;
+
+typedef struct {
     char name[50];
     char comment[255];
     char type[20];
@@ -20,7 +25,7 @@ typedef struct {
 typedef struct {
     char name[50];
     int tour_length;
-    int tour_by_city_id[];
+    int *tour_by_city_id;
 } Tour;
 
 #endif

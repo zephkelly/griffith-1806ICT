@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
     printf("Edge Weight Type: %s\n", problem.edge_weight_type);
 
     solve_tsp(&problem, time_limit, NEAREST_NEIGHBOUR);
-    // solve_tsp(&problem, time_limit, GREEDY_THREE_OPT);
+    solve_tsp(&problem, time_limit, GREEDY_THREE_OPT);
 
     free_tsp_data(&problem);
     return 0;
@@ -39,7 +39,6 @@ int main(int argc, char* argv[])
 void solve_tsp(TSPData* problem, int time_limit, SolverType solver_type)
 {
     Solver* solver = create_solver(solver_type);
-    solver->find_distances(solver, problem);
 }
 
 void free_tsp_data(TSPData* problem)

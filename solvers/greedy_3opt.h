@@ -8,6 +8,5 @@ typedef struct Greedy3OptSolver {
 } Greedy3OptSolver;
 
 Solver* create_greedy_3opt_solver();
-void find_distances_greedy_3opt(Solver *self, TSPData *problem);
 
 #endif
