@@ -23,33 +23,67 @@ void solve_nearest_neighbour(Solver *self, TSPData *problem, int time_limit)
     int n = problem->dimension;
     int *tour_by_city_index = (int*)malloc((n + 1) * sizeof(int));
     int tour_length = 0;
-    NearestCityInfo *nearest_cities = (NearestCityInfo*)malloc(n * sizeof(NearestCityInfo));
     double total_tour_length = 0.0;
     
     time_t start_time = time(NULL);
     time_t solution_time_limit = start_time + time_limit;
 
-    if (tour_by_city_index == NULL || nearest_cities == NULL)
+    if (tour_by_city_index == NULL)
     {
         printf("Memory allocation failed\n");
         free(tour_by_city_index);
-        free(nearest_cities);
     }
 
     int current_city = 0;
     tour_by_city_index[tour_length++] = current_city;
 
-    for (int i = 0; i < n; i++)
+    // Sort the nearest cities by distance
+    for (int iter = 1; iter < n && time(NULL) < solution_time_limit; iter++) 
     {
-        if (i != current_city)
+        int next_city = -1;
+        double min_squared_distance = INFINITY;
+
+        // Find the overall nearest unvisited city
+        for (int i = 0; i < n; i++)
         {
-            nearest_cities[i].city_index = current_city;
-            nearest_cities[i].squared_distance = calculate_squared_distance(&problem->cities[current_city], &problem->cities[i]);
+            if (i != current_city && !is_in_tour(tour_by_city_index, tour_length, i))
+            {
+                double distance = calculate_squared_distance(&problem->cities[current_city], &problem->cities[i]);
+                if (distance < min_squared_distance)
+                {
+                    min_squared_distance = distance;
+                    next_city = i;
+                }
+            }
         }
-        else
+
+        if (next_city == -1)
         {
-            nearest_cities[i].city_index = -1;
-            nearest_cities[i].squared_distance = INFINITY;
+            fprintf(stderr, "Error: No nearest city found\n");
+            break;
         }
+
+        tour_by_city_index[tour_length++] = next_city;
+        total_tour_length += calculate_euclidean_distance(&problem->cities[tour_by_city_index[tour_length-2]], &problem->cities[next_city]);
+        current_city = next_city;
     }
+
+    if (tour_length == n)
+    {
+        total_tour_length += calculate_euclidean_distance(&problem->cities[current_city], &problem->cities[tour_by_city_index[0]]);
+        tour_by_city_index[tour_length++] = tour_by_city_index[0];
+    }
+
+    printf("Total Tour Length: %f\n", total_tour_length);
+    printf("Tour Length: %d\n", tour_length);
+}
+
+int is_in_tour(int *tour_by_city_index, int tour_length, int city)
+{
+    for (int i = 0; i < tour_length; i++)
+    {
+        if (tour_by_city_index[i] == city) return 1;
+    }
+
+    return 0;
 }
