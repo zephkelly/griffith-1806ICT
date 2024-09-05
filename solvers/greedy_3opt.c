@@ -67,16 +67,27 @@ void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit, Tour *tou
     int initial_distance = generate_random_tour_with_distance(problem, tour);
 
     improve_tour_3opt(problem, tour->tour_by_city_id, &initial_distance, time_limit);
+}
 
-    //calculate total distance
-    tour->tour_distance = 0.0;
-
-    for (int i = 0; i < n; i++)
+void improve_tour_3opt(TSPData *problem, int *path, int *total_distance, int time_limit)
+{
+    int n = problem->dimension;
+    time_t start_time = time(NULL);
+    int improvements = 1;
+    
+    while (improvements && (time(NULL) - start_time < time_limit))
     {
-        tour->tour_distance += calculate_euclidean_distance(&problem->cities[tour->tour_by_city_id[i]], &problem->cities[tour->tour_by_city_id[(i+1)%n]]);
+        improvements = 0;
+
+        for (int i = 0; i < n - 2; i++)
+        {
+            for (int j = i + 1; j < n - 1; j++)
+            {
+                for (int k = j + 1; k < n; k++)
+                {
+                    
+                }
+            }
+        }
     }
-
-    tour->tour_distance += calculate_euclidean_distance(&problem->cities[tour->tour_by_city_id[n-1]], &problem->cities[tour->tour_by_city_id[0]]);
-
-    tour->cities_visited = n;
 }
