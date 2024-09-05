@@ -14,7 +14,7 @@ void improve_tour_3opt(TSPData *problem, int *path, int *total_distance, int tim
 
 void reverse(int *path, int i, int j);
 void apply_3opt_move(int *path, int i, int j, int k, int n);
-int calculate_distance_delta(TSPData *problem, int *path, int i, int j, int k);
+int calculate_2opt_distance_delta(TSPData *problem, int *path, int i, int j, int k);
 
 Solver* create_greedy_3opt_solver()
 {
@@ -85,9 +85,33 @@ void improve_tour_3opt(TSPData *problem, int *path, int *total_distance, int tim
             {
                 for (int k = j + 1; k < n; k++)
                 {
-                    
+                    int best_delta = calculate_2opt_distance_delta(problem, path, i, j, k);
+
+                    printf("Best Delta: %d\n", best_delta);
                 }
             }
         }
     }
+}
+
+int calculate_2opt_distance_delta(TSPData *problem, int *path, int i, int j, int k)
+{
+    int a = path[i];
+    int b = path[(i + 1) % problem->dimension];
+
+    int c = path[j];
+    int d = path[(j + 1) % problem->dimension];
+
+    int e = path[k];
+    int f = path[(k + 1) % problem->dimension];
+
+    int d0 = calculate_euclidean_distance(&problem->cities[a], &problem->cities[b]) +
+            calculate_euclidean_distance(&problem->cities[c], &problem->cities[d]) +
+            calculate_euclidean_distance(&problem->cities[e], &problem->cities[f]);
+
+    int d1 = calculate_euclidean_distance(&problem->cities[a], &problem->cities[c]) +
+            calculate_euclidean_distance(&problem->cities[b], &problem->cities[e]) +
+            calculate_euclidean_distance(&problem->cities[d], &problem->cities[f]);
+
+    return d0 - d1;
 }
