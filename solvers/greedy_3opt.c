@@ -55,6 +55,30 @@ GreedyData* should_create_distance_matrix(TSPData *problem)
     return data;
 }
 
+double get_distance(GreedyData *data, int i, int j)
+{
+    if (data->matrix != NULL)
+    {
+        return data->matrix[i][j];
+    }
+    else
+    {
+        return calculate_euclidean_distance(&data->problem->cities[i], &data->problem->cities[j]);
+    }
+}
+
+double calculate_3opt_delta_distances(GreedyData *data, int *tour, int i, int j, int k)
+{
+    int n = data->problem->dimension;
+
+    double d0 = get_distance(data, tour[i-1], tour[i]) + get_distance(data, tour[j-1], tour[j]) + get_distance(data, tour[k-1], tour[k % n]);
+    double d1;
+    double d2;
+    double d3;
+    double d4;
+    double d5;
+}
+
 void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit, Tour *calculated_tour)
 {
     Greedy3OptSolver *solver = (Greedy3OptSolver*) self;
@@ -64,6 +88,8 @@ void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit, Tour *cal
     GreedyData* data = should_create_distance_matrix(problem);
     double current_distance = generate_random_tour_with_distance(problem, calculated_tour);
     const int n = problem->dimension;
+
+    int iterations = 0;
 
     while (1)
     {
@@ -76,22 +102,31 @@ void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit, Tour *cal
             break;
         }
 
+        if (iterations >= 1)
+        {
+            printf("Iteration %d, current distance: %f\n", iterations, current_distance);
+            break;
+        }
+
         int improved = 0;
 
-        for (int i = 1; n - 2; i++)
+        for (int i = 0; i < n - 2; i++)
         {
-            for (int j = i + 1; n - 1; j++)
+            for (int j = i + 1; j < n - 1; j++)
             {
-                for (int k = j + 1; n; k++)
+                for (int k = j + 1; k < n; k++)
                 {
                     // Calculate the delta distances of i, j, k
 
                     //Calculate the distance first or grab from the matrix
 
-                   
+                    double delta_distance = calculate_3opt_delta_distances(data, calculated_tour->tour_by_city_id, i, j, k);
+                    printf("Calculating delta distances for i = %d, j = %d, k = %d\n", i, j, k);
                 }
             }
         }
+
+        iterations++;
     }
 }
 
