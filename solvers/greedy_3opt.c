@@ -223,4 +223,7 @@ void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour)
             }
         }
     }
+
+    tour->problem_name = problem->name;
+    free(distance_matrix);
 }
