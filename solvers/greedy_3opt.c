@@ -15,7 +15,7 @@ void reverse(int *path, int i, int j);
 
 typedef struct {
     int delta;
-    int best_case;
+    int move;
 } DeltaMove;
 
 
@@ -108,6 +108,40 @@ DeltaMove calculate_3opt_best_move(void *dist, int a, int b, int c, int d, int e
     return best_delta_move;
 }
 
+void reverse_segment(int* path, int start, int end, int dimension)
+{
+    // Reverse the segment between start and end
+    
+}
+
+void apply_3opt_move(int* path, int best_move, int i, int j, int k, int dimension)
+{
+    switch (best_move)
+    {
+        case 1:
+            // 2-opt move
+            break;
+        case 2:
+            // 2-opt move
+            break;
+        case 3:
+            // 2-opt move
+            break;
+        case 4:
+            // 3-opt move
+            break;
+        case 5:
+            // 3-opt move
+            break;
+        case 6:
+            // 3-opt move
+            break;
+        case 7:
+            // 3-opt move
+            break;
+    }
+}
+
 void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour)
 {
     Greedy3OptSolver *solver = (Greedy3OptSolver*) self;
@@ -161,37 +195,16 @@ void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour)
 
                     best_delta_move = calculate_3opt_best_move(distance_matrix, a, b, c, d, e, f, n);
                     tour->tour_distance += best_delta_move.delta;
+
+                    if (best_delta_move.move != 0)
+                    {
+                        apply_3opt_move(tour->tour_by_city_id, best_delta_move.move, i, j, k, n);
+
+                        improving = 1;
+                        improved_this_iteration = 1;
+                    }
                 }
             }
         }
     }
-
-    // improve_tour_3opt(problem, tour->tour_by_city_id, &initial_distance, time_limit);
-
-    // tour->tour_distance = 0.0;
-
-    // for (int i = 0; i < n - 1; i++)
-    // {
-    //     tour->tour_distance += calculate_euclidean_distance(&problem->cities[tour->tour_by_city_id[i]], &problem->cities[tour->tour_by_city_id[(i+1)%n]]);
-    // }
-
-    // tour->tour_by_city_id[n-1] = -1;
-    // tour->tour_distance += calculate_euclidean_distance(&problem->cities[tour->tour_by_city_id[n-1]], &problem->cities[tour->tour_by_city_id[0]]);
-    // tour->cities_visited = n;
-}
-
-void reverse(int *path, int start, int end)
-{
-    while (start < end) {
-        int temp = path[start];
-        path[start] = path[end];
-        path[end] = temp;
-        start++;
-        end--;
-    }
-}
-
-void apply_3opt_move(int *path, int best_move, int i, int j, int k, int n)
-{
-
 }
