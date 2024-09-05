@@ -24,8 +24,11 @@ int main(int argc, char* argv[])
     printf("File: %s.tsp\n", problem.name);
     read_tsp_file(filename, &problem);
 
-    printf("Solving with Nearest Neighbour:\n");
-    solve_tsp(&problem, time_limit, NEAREST_NEIGHBOUR);
+    // printf("Solving with Nearest Neighbour:\n");
+    // solve_tsp(&problem, time_limit, NEAREST_NEIGHBOUR);
+
+    printf("Solving with Greedy 3-opt:\n");
+    solve_tsp(&problem, time_limit, GREEDY_THREE_OPT);
 
     free_tsp_data(&problem);
     return 0;
