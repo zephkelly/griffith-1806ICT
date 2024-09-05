@@ -93,9 +93,8 @@ DeltaMove calculate_3opt_best_move(void *dist, int a, int b, int c, int d, int e
 
 	int best_delta = 0;
 	int best_move = 0;
-	int i;
 
-	for (i = 1; i < 8; i++)
+	for (int i = 1; i < 8; i++)
     {
 		if (delta_options[i] < 0 && delta_options[i] < best_delta)
         {
@@ -114,27 +113,26 @@ void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour)
     Greedy3OptSolver *solver = (Greedy3OptSolver*) self;
     int n = problem->dimension + 1;
 
-    int initial_distance = generate_random_tour_with_distance(problem, tour);
-
-    printf("Initial Distance: %d\n", initial_distance);
-
     int (*distance_matrix)[n] = malloc(sizeof(int[n][n]));
 
     for (int i = 0; i < n; i++)
     {
 		for (int j = 0; j < n; j++)
         {
-            const City *city1 = &problem->cities[tour->tour_by_city_id[i]];
-            const City *city2 = &problem->cities[tour->tour_by_city_id[j]];
+            const City *city1 = &problem->cities[i];
+            const City *city2 = &problem->cities[j];
 
             distance_matrix[i][j] = calculate_euclidean_distance(city1, city2);
 		}
 	}
 
+    int initial_distance = generate_random_tour_with_distance(problem, tour);
+    tour->tour_distance = initial_distance;
+
     // City indexes
     int i, j, k, a, b, c, d, e, f, improving = 1;
 
-    int best_move = 0;
+    DeltaMove best_delta_move;
 
     while (improving)
     {
@@ -161,7 +159,7 @@ void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour)
                     e = tour->tour_by_city_id[k];
                     f = tour->tour_by_city_id[(k+1) % n];
 
-                    DeltaMove best_delta_move = calculate_3opt_best_move(distance_matrix, a, b, c, d, e, f, n);
+                    best_delta_move = calculate_3opt_best_move(distance_matrix, a, b, c, d, e, f, n);
                     tour->tour_distance += best_delta_move.delta;
                 }
             }
