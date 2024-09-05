@@ -15,9 +15,8 @@ Solver* create_greedy_3opt_solver()
     return (Solver*) solver;
 }
 
-Tour solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit)
+void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit, Tour *calculated_tour)
 {
-    Tour tour;
-
-    return tour;
+    Greedy3OptSolver *solver = (Greedy3OptSolver*) self;
+    // printf("Greedy 3-Opt Solver\n");
 }

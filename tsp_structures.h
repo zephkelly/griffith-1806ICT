@@ -27,7 +27,9 @@ typedef struct {
     char* problem_name;
     double elapsed_time;
     double tour_distance;
+    int cities_visited;
     int* tour_by_city_id;
+    int early_stop;
 } Tour;
 
 #endif
