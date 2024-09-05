@@ -9,6 +9,12 @@
 // https://www.geeksforgeeks.org/travelling-salesman-problem-greedy-approach/
 
 int generate_random_tour_with_distance(TSPData *problem, Tour *tour);
+void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit, Tour *tour);
+void improve_tour_3opt(TSPData *problem, int *path, int *total_distance, int time_limit);
+
+void reverse(int *path, int i, int j);
+void apply_3opt_move(int *path, int i, int j, int k, int n);
+int calculate_distance_delta(TSPData *problem, int *path, int i, int j, int k);
 
 Solver* create_greedy_3opt_solver()
 {
@@ -25,11 +31,6 @@ int generate_random_tour_with_distance(TSPData *problem, Tour *tour)
     int n = problem->dimension;
     int total_distance = 0.0;
     tour->tour_by_city_id = (int*)malloc((problem->dimension + 1) * sizeof(int));
-
-    if (tour->tour_by_city_id != NULL)
-    {
-        free(tour->tour_by_city_id);
-    }
 
     if (tour->tour_by_city_id == NULL)
     {
@@ -63,11 +64,19 @@ void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit, Tour *tou
     Greedy3OptSolver *solver = (Greedy3OptSolver*) self;
     int n = problem->dimension;
 
-    tour->tour_by_city_id = (int*)malloc((problem->dimension + 1) * sizeof(int));
-
     int initial_distance = generate_random_tour_with_distance(problem, tour);
 
-    printf("Initial Distance: %d\n", initial_distance);
+    improve_tour_3opt(problem, tour->tour_by_city_id, &initial_distance, time_limit);
 
+    //calculate total distance
+    tour->tour_distance = 0.0;
+
+    for (int i = 0; i < n; i++)
+    {
+        tour->tour_distance += calculate_euclidean_distance(&problem->cities[tour->tour_by_city_id[i]], &problem->cities[tour->tour_by_city_id[(i+1)%n]]);
+    }
+
+    tour->tour_distance += calculate_euclidean_distance(&problem->cities[tour->tour_by_city_id[n-1]], &problem->cities[tour->tour_by_city_id[0]]);
+
+    tour->cities_visited = n;
 }
-
