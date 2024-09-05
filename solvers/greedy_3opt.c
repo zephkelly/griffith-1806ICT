@@ -31,14 +31,14 @@ int generate_random_tour_with_distance(TSPData *problem, Tour *tour)
     srand(time(NULL));
 
     int n = problem->dimension;
-    int total_distance = 0.0;
+    int cities_visited = 0;
 
     if (tour->tour_by_city_id != NULL)
     {
         free(tour->tour_by_city_id);
     }
 
-    tour->tour_by_city_id = (int*)malloc((problem->dimension + 1) * sizeof(int));
+    tour->tour_by_city_id = (int*)malloc((problem->dimension) * sizeof(int));
 
     if (tour->tour_by_city_id == NULL)
     {
@@ -57,14 +57,20 @@ int generate_random_tour_with_distance(TSPData *problem, Tour *tour)
         int temp = tour->tour_by_city_id[i];
         tour->tour_by_city_id[i] = tour->tour_by_city_id[j];
         tour->tour_by_city_id[j] = temp;
+    }
 
-        if (i > 1)
-        {
-            total_distance += calculate_euclidean_distance(&problem->cities[tour->tour_by_city_id[i]], &problem->cities[tour->tour_by_city_id[i-1]]);
-        }
+    tour->cities_visited = cities_visited;
+    tour->tour_by_city_id[n + 1] = -1;
+
+    int total_distance = 0.0;
+
+    for (int i = 0; i < n - 1; i++)
+    {
+        total_distance += calculate_euclidean_distance(&problem->cities[tour->tour_by_city_id[i]], &problem->cities[tour->tour_by_city_id[(i+1)%n]]);
     }
 
     total_distance += calculate_euclidean_distance(&problem->cities[tour->tour_by_city_id[n-1]], &problem->cities[tour->tour_by_city_id[0]]);
+
     return total_distance;
 }
 
@@ -155,8 +161,8 @@ void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour)
                     e = tour->tour_by_city_id[k];
                     f = tour->tour_by_city_id[(k+1) % n];
 
-                    DeltaMove best_move = calculate_3opt_best_move(distance_matrix, a, b, c, d, e, f, n);
-                    printf("Best Move: %d\n", best_move.delta);
+                    DeltaMove best_delta_move = calculate_3opt_best_move(distance_matrix, a, b, c, d, e, f, n);
+                    tour->tour_distance += best_delta_move.delta;
                 }
             }
         }
