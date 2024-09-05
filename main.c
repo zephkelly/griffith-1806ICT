@@ -69,14 +69,10 @@ void output_results(const Tour* tour)
 
     for (int i = 0; i < tour->cities_visited; i++)
     {
-        if (tour->tour_by_city_id[i] == -1)
-        {
-            printf("%d\n", tour->tour_by_city_id[i]);
-            break;
-        }
-
         printf("%d\n", tour->tour_by_city_id[i] + 1);
     }
+
+    printf("-1\n");
 
     if (tour->early_stop)
     {
