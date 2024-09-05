@@ -63,6 +63,7 @@ void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit, Tour *cal
 
     GreedyData* data = should_create_distance_matrix(problem);
     double current_distance = generate_random_tour_with_distance(problem, calculated_tour);
+    const int n = problem->dimension;
 
     while (1)
     {
@@ -75,6 +76,22 @@ void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit, Tour *cal
             break;
         }
 
+        int improved = 0;
+
+        for (int i = 1; n - 2; i++)
+        {
+            for (int j = i + 1; n - 1; j++)
+            {
+                for (int k = j + 1; n; k++)
+                {
+                    // Calculate the delta distances of i, j, k
+
+                    //Calculate the distance first or grab from the matrix
+
+                   
+                }
+            }
+        }
     }
 }
 
