@@ -7,8 +7,6 @@
 #include "../tsp_utils.h"
 #include "../tsp_structures.h"
 
-// https://sindhukumari.medium.com/traveling-salesman-problem-9deb6853ac6
-
 Solver* create_nearest_neighbour_solver()
 {
     NearestNeighbourSolver* solver = malloc(sizeof(NearestNeighbourSolver));
@@ -108,18 +106,6 @@ void solve_nearest_neighbour(Solver *self, TSPData *problem, int time_limit, Tou
         free(tour_by_city_id);
         return;
     }
-
-    // for (int i = 0; i < cities_visited; i++)
-    // {
-    //     if (calculated_tour->tour_by_city_id[i] == -1)
-    //     {
-    //         // Keep -1 as is
-    //     }
-    //     else
-    //     {
-    //         calculated_tour->tour_by_city_id[i] = problem->cities[calculated_tour->tour_by_city_id[i]].id;
-    //     }
-    // }
 }
 
 int is_in_tour(int *tour_by_city_id, int cities_visited, int city)
