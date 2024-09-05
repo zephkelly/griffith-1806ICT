@@ -33,7 +33,7 @@ void solve_nearest_neighbour(Solver *self, TSPData *problem, int time_limit, Tou
     NearestNeighbourSolver *solver = (NearestNeighbourSolver*) self;
 
     int n = problem->dimension;
-    int *tour_by_city_id = (int*)malloc((n + 1) * sizeof(int));
+    int *tour_by_city_id = (int*)malloc((n) * sizeof(int));
     int cities_visited = 0;
     double total_tour_distance = 0.0;
     calculated_tour->early_stop = 0;
@@ -91,7 +91,6 @@ void solve_nearest_neighbour(Solver *self, TSPData *problem, int time_limit, Tou
         total_tour_distance += calculate_euclidean_distance(&problem->cities[current_city], &problem->cities[tour_by_city_id[0]]);
     }
 
-    tour_by_city_id[cities_visited++] = -1;
     clock_t end_time = clock();
     double solution_elapsed_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
 

@@ -8,6 +8,8 @@
         "random": "c",
         "limits": "c",
         "algorithm": "c",
-        "typeinfo": "c"
+        "typeinfo": "c",
+        "type_traits": "c",
+        "nearest_neighbour.h": "c"
     }
 }

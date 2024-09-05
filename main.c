@@ -21,11 +21,13 @@ int main(int argc, char* argv[])
 
     TSPData problem;
 
-    printf("File: %s.tsp\n", problem.name);
     read_tsp_file(filename, &problem);
 
     printf("Solving with Nearest Neighbour:\n");
     solve_tsp(&problem, time_limit, NEAREST_NEIGHBOUR);
+
+    printf("Solving with Greedy 3-Opt:\n");
+    solve_tsp(&problem, time_limit, GREEDY_THREE_OPT);
 
     free_tsp_data(&problem);
     return 0;
@@ -33,13 +35,14 @@ int main(int argc, char* argv[])
 
 void solve_tsp(TSPData* problem, int time_limit, SolverType solver_type)
 {
+    Tour tour = {0};
+    
     Solver* solver = create_solver(solver_type);
-    Tour calculated_tour = {0};
-    solver->solve(solver, problem, time_limit, &calculated_tour);
+    solver->solve(solver, problem, time_limit, &tour);
 
-    output_results(&calculated_tour);
+    output_results(&tour);
 
-    free(calculated_tour.tour_by_city_id);
+    free(tour.tour_by_city_id);
 }
 
 void free_tsp_data(TSPData* problem)
@@ -59,21 +62,16 @@ void output_results(const Tour* tour)
         return;
     }
 
-    printf("Problem Name: %s.tsp\n", tour->problem_name);
-    printf("Time Taken: %f seconds\n", tour->elapsed_time);
-    printf("Tour Distance: %f\n", tour->tour_distance);
-    printf("Cities visited:\n");
+    printf("%s.tsp\n", tour->problem_name);
+    printf("Shortest found tour length: %f\n", tour->tour_distance);
+    printf("Tour:\n");
 
     for (int i = 0; i < tour->cities_visited; i++)
     {
-        if (tour->tour_by_city_id[i] == -1)
-        {
-            printf("%d\n", tour->tour_by_city_id[i]);
-            break;
-        }
-
         printf("%d\n", tour->tour_by_city_id[i] + 1);
     }
+
+    printf("-1\n\n");
 
     if (tour->early_stop)
     {
