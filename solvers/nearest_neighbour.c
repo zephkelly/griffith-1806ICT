@@ -35,7 +35,7 @@ void solve_nearest_neighbour(Solver *self, TSPData *problem, int time_limit, Tou
     NearestNeighbourSolver *solver = (NearestNeighbourSolver*) self;
 
     int n = problem->dimension;
-    int *tour_by_city_index = (int*)malloc((n + 1) * sizeof(int));
+    int *tour_by_city_id = (int*)malloc((n + 1) * sizeof(int));
     int cities_visited = 0;
     double total_tour_distance = 0.0;
     calculated_tour->early_stop = 0;
@@ -43,14 +43,14 @@ void solve_nearest_neighbour(Solver *self, TSPData *problem, int time_limit, Tou
     clock_t start_time = clock();
     clock_t last_update_time = start_time;
 
-    if (tour_by_city_index == NULL)
+    if (tour_by_city_id == NULL)
     {
         printf("Memory allocation failed\n");
-        free(tour_by_city_index);
+        free(tour_by_city_id);
     }
 
     int current_city = 0;
-    tour_by_city_index[cities_visited++] = current_city;
+    tour_by_city_id[cities_visited++] = current_city;
 
     for (int i = 1; i < n; i++) 
     {
@@ -66,7 +66,7 @@ void solve_nearest_neighbour(Solver *self, TSPData *problem, int time_limit, Tou
 
         for (int j = 0; j < n; j++)
         {
-            if (j != current_city && !is_in_tour(tour_by_city_index, cities_visited, j))
+            if (j != current_city && !is_in_tour(tour_by_city_id, cities_visited, j))
             {
                 double distance = calculate_squared_distance(&problem->cities[current_city], &problem->cities[j]);
                 if (distance < min_squared_distance)
@@ -83,17 +83,17 @@ void solve_nearest_neighbour(Solver *self, TSPData *problem, int time_limit, Tou
             break;
         }
 
-        tour_by_city_index[cities_visited++] = next_city;
-        total_tour_distance += calculate_euclidean_distance(&problem->cities[tour_by_city_index[cities_visited-2]], &problem->cities[next_city]);
+        tour_by_city_id[cities_visited++] = next_city;
+        total_tour_distance += calculate_euclidean_distance(&problem->cities[tour_by_city_id[cities_visited-2]], &problem->cities[next_city]);
         current_city = next_city;
     }
 
     if (cities_visited == n)
     {
-        total_tour_distance += calculate_euclidean_distance(&problem->cities[current_city], &problem->cities[tour_by_city_index[0]]);
-        tour_by_city_index[cities_visited++] = -1;
+        total_tour_distance += calculate_euclidean_distance(&problem->cities[current_city], &problem->cities[tour_by_city_id[0]]);
     }
 
+    tour_by_city_id[cities_visited++] = -1;
     clock_t end_time = clock();
     double solution_elapsed_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
 
@@ -101,34 +101,32 @@ void solve_nearest_neighbour(Solver *self, TSPData *problem, int time_limit, Tou
     calculated_tour->elapsed_time = solution_elapsed_time;
     calculated_tour->tour_distance = total_tour_distance;
     calculated_tour->cities_visited = cities_visited;
-    calculated_tour->tour_by_city_id = (int*)malloc(cities_visited * sizeof(int));
+    calculated_tour->tour_by_city_id = tour_by_city_id;
 
     if (calculated_tour->tour_by_city_id == NULL) {
         printf("Memory allocation failed for tour_by_city_id\n");
-        free(tour_by_city_index);
+        free(tour_by_city_id);
         return;
     }
 
-    for (int i = 0; i < cities_visited; i++)
-    {
-        if (tour_by_city_index[i] == -1)
-        {
-            calculated_tour->tour_by_city_id[i] = -1;
-        }
-        else
-        {
-            calculated_tour->tour_by_city_id[i] = problem->cities[tour_by_city_index[i]].id;
-        }
-    }
-
-    free(tour_by_city_index);
+    // for (int i = 0; i < cities_visited; i++)
+    // {
+    //     if (calculated_tour->tour_by_city_id[i] == -1)
+    //     {
+    //         // Keep -1 as is
+    //     }
+    //     else
+    //     {
+    //         calculated_tour->tour_by_city_id[i] = problem->cities[calculated_tour->tour_by_city_id[i]].id;
+    //     }
+    // }
 }
 
-int is_in_tour(int *tour_by_city_index, int cities_visited, int city)
+int is_in_tour(int *tour_by_city_id, int cities_visited, int city)
 {
     for (int i = 0; i < cities_visited; i++)
     {
-        if (tour_by_city_index[i] == city) return 1;
+        if (tour_by_city_id[i] == city) return 1;
     }
 
     return 0;

@@ -64,9 +64,15 @@ void output_results(const Tour* tour)
     printf("Tour Distance: %f\n", tour->tour_distance);
     printf("Cities visited:\n");
 
-    for (int i = 2; i < tour->cities_visited; i++)
+    for (int i = 0; i < tour->cities_visited; i++)
     {
-        printf(" %d\n", tour->tour_by_city_id[i]);
+        if (tour->tour_by_city_id[i] == -1)
+        {
+            printf("%d\n", tour->tour_by_city_id[i]);
+            break;
+        }
+
+        printf("%d\n", tour->tour_by_city_id[i] + 1);
     }
 
     if (tour->early_stop)
