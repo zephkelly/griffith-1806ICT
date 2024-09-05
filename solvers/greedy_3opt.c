@@ -161,7 +161,7 @@ void apply_3opt_move(int* path, int best_move, int i, int j, int k, int n)
 void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour)
 {
     Greedy3OptSolver *solver = (Greedy3OptSolver*) self;
-    int n = problem->dimension + 1;
+    int n = problem->dimension;
 
     int (*distance_matrix)[n] = malloc(sizeof(int[n][n]));
 
