@@ -125,30 +125,35 @@ void reverse_segment(int* path, int start, int end, int n)
 	}
 }
 
-void apply_3opt_move(int* path, int best_move, int i, int j, int k, int dimension)
+void apply_3opt_move(int* path, int best_move, int i, int j, int k, int n)
 {
     switch (best_move)
     {
         case 1:
-            // 2-opt move
+            reverse_segment(path, (k + 1) % n, i, n);
             break;
         case 2:
-            // 2-opt move
+            reverse_segment(path, (j + 1) % n, k, n);
             break;
         case 3:
-            // 2-opt move
+            reverse_segment(path, (i + 1) % n, j, n);
             break;
         case 4:
-            // 3-opt move
+            reverse_segment(path, (j + 1) % n, k, n);
+		    reverse_segment(path, (i + 1) % n, j, n);
             break;
         case 5:
-            // 3-opt move
+            reverse_segment(path, (k + 1) % n, i, n);
+		    reverse_segment(path, (i + 1) % n, j, n);
             break;
         case 6:
-            // 3-opt move
+            reverse_segment(path, (k + 1) % n, i, n);
+		    reverse_segment(path, (j + 1) % n, k, n);
             break;
         case 7:
-            // 3-opt move
+            reverse_segment(path, (k + 1) % n, i, n);
+		    reverse_segment(path, (i + 1) % n, j, n);
+		    reverse_segment(path, (j + 1) % n, k, n);
             break;
     }
 }
@@ -182,23 +187,23 @@ void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour)
     while (improving)
     {
         improving = 0;
-        int improved_this_iteration = 0;
+        int should_break_loop = 0;
 
         int case_1, case_2, case_3 = 0; // Edges
 
-        for (case_1 = 0; case_1 < n; case_1++)
+        for (case_1 = 0; case_1 < n && !should_break_loop; case_1++)
         {
             i = case_1;
             a = tour->tour_by_city_id[i]; // Index i
             b = tour->tour_by_city_id[(i+1) % n]; // Index i+1
 
-            for (case_2 = 1; case_2 < n - 2; case_2++)
+            for (case_2 = 1; case_2 < n - 2 && !should_break_loop; case_2++)
             {
                 j = (i + case_2) % n;
                 c = tour->tour_by_city_id[j];
                 d = tour->tour_by_city_id[(j+1) % n];
 
-                for (case_3 = case_2 + 1; case_3 < n; case_3++)
+                for (case_3 = case_2 + 1; case_3 < n && !should_break_loop; case_3++)
                 {
                     k = (i + case_3) % n;
                     e = tour->tour_by_city_id[k];
@@ -212,7 +217,7 @@ void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour)
                         apply_3opt_move(tour->tour_by_city_id, best_delta_move.move, i, j, k, n);
 
                         improving = 1;
-                        improved_this_iteration = 1;
+                        should_break_loop = 1;
                     }
                 }
             }
