@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
     solve_tsp(&problem, time_limit, NEAREST_NEIGHBOUR);
 
     printf("Solving with Greedy 2-Opt:\n");
-    solve_tsp(&problem, time_limit, GREEDY_TWO_OPT);
+    solve_tsp(&problem, time_limit, GREEDY_THREE_OPT);
 
     free_tsp_data(&problem);
     return 0;

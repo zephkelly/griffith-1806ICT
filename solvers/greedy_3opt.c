@@ -1,4 +1,4 @@
-#include "greedy_2opt.h"
+#include "greedy_3opt.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -16,7 +16,7 @@ void reverse(int *path, int i, int j);
 Solver* create_greedy_3opt_solver()
 {
     Greedy3OptSolver* solver = malloc(sizeof(Greedy3OptSolver));
-    solver->base.solve = solve_greedy_2opt;
+    solver->base.solve = solve;
     return (Solver*) solver;
 }
 
@@ -71,7 +71,7 @@ void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour)
 
     printf("Initial Distance: %d\n", initial_distance);
 
-    improve_tour_2opt(problem, tour->tour_by_city_id, &initial_distance, time_limit);
+    improve_tour_3opt(problem, tour->tour_by_city_id, &initial_distance, time_limit);
 
     tour->tour_distance = 0.0;
 
@@ -93,7 +93,8 @@ typedef struct {
 
 BestMove calculate_3opt_best_move(TSPData *problem, int *path, int i, int j, int k)
 {
-
+    int max_delta = 0;
+    int best_case = 0;
     BestMove best_move = {max_delta, best_case};
 
     return best_move;
@@ -131,11 +132,11 @@ void improve_tour_3opt(TSPData *problem, int *path, int *total_distance, int tim
             {
                 for (int k = j + 1; k < n; k++)
                 {
-                    BestMove best_move = calculate_2opt_distance_delta(problem, path, i, j, k);
+                    BestMove best_move = calculate_3opt_best_move(problem, path, i, j, k);
 
                     if (best_move.best_case != 0)
                     {
-                        apply_2opt_move(path, best_move.best_case, i, j, k, n);
+                        apply_3opt_move(path, best_move.best_case, i, j, k, n);
                         *total_distance -= best_move.delta;
 
                         printf("Total Distance: %d\n", *total_distance);

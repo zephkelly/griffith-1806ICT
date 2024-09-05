@@ -9,6 +9,7 @@
         "limits": "c",
         "algorithm": "c",
         "typeinfo": "c",
-        "type_traits": "c"
+        "type_traits": "c",
+        "nearest_neighbour.h": "c"
     }
 }
