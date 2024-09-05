@@ -11,13 +11,10 @@ int generate_random_tour_with_distance(TSPData *problem, Tour *tour);
 void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour);
 void improve_tour_3opt(TSPData *problem, int *path, int *total_distance, int time_limit);
 
-void reverse(int *path, int i, int j);
-
 typedef struct {
     int delta;
     int move;
 } DeltaMove;
-
 
 Solver* create_greedy_3opt_solver()
 {
@@ -31,7 +28,7 @@ int generate_random_tour_with_distance(TSPData *problem, Tour *tour)
     srand(time(NULL));
 
     int n = problem->dimension;
-    int cities_visited = 0;
+    int cities_visited;
 
     if (tour->tour_by_city_id != NULL)
     {
@@ -49,6 +46,7 @@ int generate_random_tour_with_distance(TSPData *problem, Tour *tour)
     for (int i = 0; i < n; i++)
     {
         tour->tour_by_city_id[i] = i;
+        cities_visited++;
     }
 
     for (int i = n - 1; i > 0; i--)
@@ -60,7 +58,6 @@ int generate_random_tour_with_distance(TSPData *problem, Tour *tour)
     }
 
     tour->cities_visited = cities_visited;
-    tour->tour_by_city_id[n + 1] = -1;
 
     int total_distance = 0.0;
 
@@ -108,10 +105,24 @@ DeltaMove calculate_3opt_best_move(void *dist, int a, int b, int c, int d, int e
     return best_delta_move;
 }
 
-void reverse_segment(int* path, int start, int end, int dimension)
+void reverse_segment(int* path, int start, int end, int n)
 {
-    // Reverse the segment between start and end
-    
+    int half_elements = ((n + end - start + 1) % n) / 2;
+
+	int left_pointer = start;
+	int right_pointer = end;
+	int temp;
+
+	for (int i = 1; i < half_elements + 1; i++)
+    {
+		temp = path[right_pointer];
+		path[right_pointer] = path[left_pointer];
+		path[left_pointer] = temp;
+
+        // bound check
+		left_pointer = (left_pointer + 1) % n;
+		right_pointer = (n + right_pointer - 1) % n;
+	}
 }
 
 void apply_3opt_move(int* path, int best_move, int i, int j, int k, int dimension)
