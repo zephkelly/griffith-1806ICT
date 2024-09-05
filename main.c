@@ -22,13 +22,10 @@ int main(int argc, char* argv[])
 
     read_tsp_file(filename, &problem);
 
-    // printf("Problem Name: %s\n", problem.name);
-    // printf("Comment: %s\n", problem.comment);
-    // printf("Type: %s\n", problem.type);
-    // printf("Dimensions: %d\n", problem.dimension);
-    // printf("Read Nodes: %d\n", problem.read_nodes);
-    // printf("Edge Weight Type: %s\n", problem.edge_weight_type);
+    printf("Evan Kelly's TSP Solver\n");
+    printf("Problem Name: %s.tsp\n", problem.name);
 
+    printf("Solving with Nearest Neighbour\n");
     solve_tsp(&problem, time_limit, NEAREST_NEIGHBOUR);
     solve_tsp(&problem, time_limit, GREEDY_THREE_OPT);
 

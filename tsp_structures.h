@@ -25,7 +25,6 @@ typedef struct {
 
 typedef struct {
     char* problem_name;
-    char* solver_name;
     double elapsed_time;
     double tour_distance;
     int* tour_by_city_id;

@@ -36,13 +36,19 @@ Tour solve_nearest_neighbour(Solver *self, TSPData *problem, int time_limit)
     int current_city = 0;
     tour_by_city_index[cities_toured++] = current_city;
 
-    // Sort the nearest cities by distance
     for (int i = 1; i < n; i++) 
     {
+        clock_t current_time = clock();
+        double elapsed_time = (double)(current_time - start_time) / CLOCKS_PER_SEC;
+        
+        if (elapsed_time >= time_limit) {
+            printf("Time limit reached. Stopping early.\n");
+            break;
+        }
+
         int next_city = -1;
         double min_squared_distance = INFINITY;
 
-        // Find the overall nearest unvisited city
         for (int j = 0; j < n; j++)
         {
             if (j != current_city && !is_in_tour(tour_by_city_index, cities_toured, j))
@@ -78,14 +84,12 @@ Tour solve_nearest_neighbour(Solver *self, TSPData *problem, int time_limit)
 
     Tour calculated_tour = {
         .problem_name = problem->name,
-        .solver_name = "Nearest Neighbour",
         .elapsed_time = solution_elapsed_time,
         .tour_distance = total_tour_distance,
         .tour_by_city_id = (int*)malloc(cities_toured * sizeof(int))
     };
 
     printf("Problem Name: %s.tsp\n", calculated_tour.problem_name);
-    printf("Solver Used: %s\n", calculated_tour.solver_name);
     printf("Time Taken: %f seconds\n", calculated_tour.elapsed_time);
     printf("Tour Distance: %f\n", calculated_tour.tour_distance);
     printf("Cities visited:\n");
@@ -97,7 +101,7 @@ Tour solve_nearest_neighbour(Solver *self, TSPData *problem, int time_limit)
             if (tour_by_city_index[i] == -1)
             {
                 calculated_tour.tour_by_city_id[i] = -1;
-                printf(" -1 (End of tour)\n");
+                printf(" -1\n");
             }
             else
             {
