@@ -5,6 +5,8 @@
 #include "solver_factory.h"
 
 void solve_tsp(TSPData* problem, int time_limit, SolverType solver_type);
+void free_tsp_data(TSPData* problem);
+void output_results(const Tour* tour);
 
 int main(int argc, char* argv[]) 
 {
@@ -18,22 +20,63 @@ int main(int argc, char* argv[])
     int time_limit = atoi(argv[2]);
 
     TSPData problem;
+
+    printf("File: %s.tsp\n", problem.name);
     read_tsp_file(filename, &problem);
 
-    printf("Problem Name: %s\n", problem.name);
-    printf("Comment: %s\n", problem.comment);
-    printf("Type: %s\n", problem.type);
-    printf("Dimensions: %d\n", problem.dimension);
-    printf("Read Nodes: %d\n", problem.read_nodes);
-    printf("Edge Weight Type: %s\n", problem.edge_weight_type);
-
+    printf("Solving with Nearest Neighbour:\n");
     solve_tsp(&problem, time_limit, NEAREST_NEIGHBOUR);
-    solve_tsp(&problem, time_limit, GREEDY_THREE_OPT);
 
+    free_tsp_data(&problem);
     return 0;
 }
 
 void solve_tsp(TSPData* problem, int time_limit, SolverType solver_type)
 {
     Solver* solver = create_solver(solver_type);
+    Tour calculated_tour = {0};
+    solver->solve(solver, problem, time_limit, &calculated_tour);
+
+    output_results(&calculated_tour);
+
+    free(calculated_tour.tour_by_city_id);
+}
+
+void free_tsp_data(TSPData* problem)
+{
+    if (problem->cities != NULL)
+    {
+        free(problem->cities);
+        problem->cities = NULL;
+    }
+}
+
+void output_results(const Tour* tour)
+{
+    if (tour == NULL)
+    {
+        printf("Error: Null tour pointer\n");
+        return;
+    }
+
+    printf("Problem Name: %s.tsp\n", tour->problem_name);
+    printf("Time Taken: %f seconds\n", tour->elapsed_time);
+    printf("Tour Distance: %f\n", tour->tour_distance);
+    printf("Cities visited:\n");
+
+    for (int i = 0; i < tour->cities_visited; i++)
+    {
+        if (tour->tour_by_city_id[i] == -1)
+        {
+            printf("%d\n", tour->tour_by_city_id[i]);
+            break;
+        }
+
+        printf("%d\n", tour->tour_by_city_id[i] + 1);
+    }
+
+    if (tour->early_stop)
+    {
+        printf("*Tour terminated early\n");
+    }
 }
