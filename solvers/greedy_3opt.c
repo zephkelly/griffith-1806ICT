@@ -8,7 +8,7 @@
 
 // https://www.geeksforgeeks.org/travelling-salesman-problem-greedy-approach/
 
-void generate_random_tour_with_distance(TSPData *problem, Tour *tour);
+double generate_random_tour_with_distance(TSPData *problem, Tour *tour);
 
 Solver* create_greedy_3opt_solver()
 {
@@ -24,8 +24,7 @@ void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit, Tour *cal
 
     clock_t start_time = clock();
 
-    
-    generate_random_tour_with_distance(problem, calculated_tour);
+    double current_distance = generate_random_tour_with_distance(problem, calculated_tour);
 
     for (int i = 0; i < problem->dimension; i++)
     {
@@ -33,14 +32,17 @@ void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit, Tour *cal
     }
     printf("\n");
 
-    printf("Tour distance: %.2f\n", calculated_tour->tour_distance);
+    printf("Tour distance: %.2f\n", current_distance);
 }
 
-void generate_random_tour_with_distance(TSPData *problem, Tour *tour)
+double generate_random_tour_with_distance(TSPData *problem, Tour *tour)
 {
     int n = problem->dimension;
+    double total_distance = 0.0;
     tour->tour_by_city_id = (int*)malloc((problem->dimension + 1) * sizeof(int));
 
+    srand(time(NULL));
+ 
     for (int i = 0; i < n; i++)
     {
         tour->tour_by_city_id[i] = i;
@@ -54,9 +56,10 @@ void generate_random_tour_with_distance(TSPData *problem, Tour *tour)
 
         if (i > 1)
         {
-            tour->tour_distance += calculate_euclidean_distance(&problem->cities[tour->tour_by_city_id[i]], &problem->cities[tour->tour_by_city_id[i-1]]);
+            total_distance += calculate_euclidean_distance(&problem->cities[tour->tour_by_city_id[i]], &problem->cities[tour->tour_by_city_id[i-1]]);
         }
     }
 
-    tour->tour_distance += calculate_euclidean_distance(&problem->cities[tour->tour_by_city_id[n-1]], &problem->cities[tour->tour_by_city_id[0]]);
+    total_distance += calculate_euclidean_distance(&problem->cities[tour->tour_by_city_id[n-1]], &problem->cities[tour->tour_by_city_id[0]]);
+    return total_distance;
 }
