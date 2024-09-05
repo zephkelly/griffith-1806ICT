@@ -8,6 +8,11 @@
 
 // https://www.geeksforgeeks.org/travelling-salesman-problem-greedy-approach/
 
+typedef struct {
+    double **matrix;
+    TSPData *problem;
+} GreedyData;
+
 double generate_random_tour_with_distance(TSPData *problem, Tour *tour);
 
 Solver* create_greedy_3opt_solver()
@@ -17,6 +22,34 @@ Solver* create_greedy_3opt_solver()
     return (Solver*) solver;
 }
 
+GreedyData* should_create_distance_matrix(TSPData *problem)
+{
+    GreedyData *data = malloc(sizeof(GreedyData));
+    data->problem = problem;
+    
+    if (problem->dimension <= 5000)
+    {
+        printf("Creating distance matrix\n");
+        int n = problem->dimension;
+        data->matrix = malloc(n * sizeof(double*));
+
+        for (int i = 0; i < n; i++)
+        {
+            data->matrix[i] = malloc(n * sizeof(double));
+
+            for (int j = 0; j < n; j++)
+            {
+                data->matrix[i][j] = calculate_euclidean_distance(&problem->cities[i], &problem->cities[j]);
+            }
+        }
+    }
+    else
+    {
+        data->matrix = NULL;
+    }
+    
+    return data;
+}
 
 void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit, Tour *calculated_tour)
 {
@@ -26,13 +59,7 @@ void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit, Tour *cal
 
     double current_distance = generate_random_tour_with_distance(problem, calculated_tour);
 
-    for (int i = 0; i < problem->dimension; i++)
-    {
-        printf("%d ", calculated_tour->tour_by_city_id[i] + 1);
-    }
-    printf("\n");
-
-    printf("Tour distance: %.2f\n", current_distance);
+    GreedyData* data = should_create_distance_matrix(problem);
 }
 
 double generate_random_tour_with_distance(TSPData *problem, Tour *tour)

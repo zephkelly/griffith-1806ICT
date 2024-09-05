@@ -20,12 +20,12 @@ int main(int argc, char* argv[])
     int time_limit = atoi(argv[2]);
 
     TSPData problem;
-
-    printf("File: %s.tsp\n", problem.name);
     read_tsp_file(filename, &problem);
+    
+    printf("File: %s.tsp\n", problem.name);
 
-    printf("Solving with Nearest Neighbour:\n");
-    solve_tsp(&problem, time_limit, NEAREST_NEIGHBOUR);
+    // printf("Solving with Nearest Neighbour:\n");
+    // solve_tsp(&problem, time_limit, NEAREST_NEIGHBOUR);
 
     printf("Solving with Greedy 3-opt:\n");
     solve_tsp(&problem, time_limit, GREEDY_THREE_OPT);
