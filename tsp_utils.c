@@ -8,7 +8,7 @@ int calculate_squared_distance(const City *city1, const City *city2)
     return dx*dx + dy*dy;
 }
 
-double calculate_euclidean_distance(const City *city1, const City *city2)
+int calculate_euclidean_distance(const City *city1, const City *city2)
 {
     return sqrt(calculate_squared_distance(city1, city2));
 }
