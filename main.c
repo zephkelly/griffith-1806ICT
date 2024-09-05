@@ -21,11 +21,11 @@ int main(int argc, char* argv[])
 
     TSPData problem;
 
-    printf("File: %s.tsp\n", problem.name);
+    printf("File: %s\n", filename);
     read_tsp_file(filename, &problem);
 
-    // printf("Solving with Nearest Neighbour:\n");
-    // solve_tsp(&problem, time_limit, NEAREST_NEIGHBOUR);
+    printf("Solving with Nearest Neighbour:\n");
+    solve_tsp(&problem, time_limit, NEAREST_NEIGHBOUR);
 
     printf("Solving with Greedy 3-Opt:\n");
     solve_tsp(&problem, time_limit, GREEDY_THREE_OPT);
@@ -62,7 +62,7 @@ void output_results(const Tour* tour)
         return;
     }
 
-    printf("Problem Name: %s.tsp\n", tour->problem_name);
+    printf("Problem Name: %s\n", tour->problem_name);
     printf("Time Taken: %f seconds\n", tour->elapsed_time);
     printf("Tour Distance: %f\n", tour->tour_distance);
     printf("Cities visited:\n");
