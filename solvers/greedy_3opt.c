@@ -90,8 +90,9 @@ double calculate_best_delta_distance(GreedyData *data, int *tour, int i, int j, 
     double d4 = get_distance(data, tour[i-1], tour[j-1]) + get_distance(data, tour[k-1], tour[i]) + get_distance(data, tour[j], tour[k % n]);
     double d5 = get_distance(data, tour[i-1], tour[j]) + get_distance(data, tour[k-1], tour[i]) + get_distance(data, tour[j-1], tour[k % n]);
     double d6 = get_distance(data, tour[i-1], tour[k-1]) + get_distance(data, tour[j], tour[j-1]) + get_distance(data, tour[i], tour[k % n]);
+    double d7 = get_distance(data, tour[i-1], tour[j]) + get_distance(data, tour[k-1], tour[j-1]) + get_distance(data, tour[i], tour[k % n]);
     
-    double deltas[7] = {
+    double deltas[8] = {
         0.0,
         d0 - d1,
         d0 - d2,
@@ -99,11 +100,12 @@ double calculate_best_delta_distance(GreedyData *data, int *tour, int i, int j, 
         d0 - d4,
         d0 - d5,
         d0 - d6,
+        d0 - d7
     };
 
     double best_delta = 0.0;
     int best_move = 0;
-    for (int m = 1; m < 7; m++)
+    for (int m = 1; m < 8; m++)
     {
         if (deltas[m] < best_delta)
         {
@@ -137,6 +139,11 @@ double calculate_best_delta_distance(GreedyData *data, int *tour, int i, int j, 
                 reverse_segment(tour, i, k-1);
                 reverse_segment(tour, j, k-1);
                 break;
+            case 7:
+                reverse_segment(tour, i, j-1);
+                reverse_segment(tour, j, k-1);
+                reverse_segment(tour, i, k-1);
+                break;
         }
     }
 
@@ -154,9 +161,12 @@ void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit, Tour *cal
     const int n = problem->dimension;
 
     int iterations = 0;
+    int improved = 1;
 
     while (1)
     {
+        improved = 0;
+
         clock_t current_time = clock();
         double elapsed_time = (double)(current_time - start_time) / CLOCKS_PER_SEC;
 
@@ -166,13 +176,12 @@ void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit, Tour *cal
             break;
         }
 
-        if (iterations >= 1)
-        {
-            printf("Iteration %d, current distance: %f\n", iterations, current_distance);
-            break;
-        }
+        // if (iterations >= 1)
+        // {
+        //     printf("Iteration %d, current distance: %f\n", iterations, current_distance);
+        //     break;
+        // }
 
-        int improved = 0;
 
         for (int i = 0; i < n - 2; i++)
         {
@@ -181,13 +190,22 @@ void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit, Tour *cal
                 for (int k = j + 1; k < n; k++)
                 {
                     double delta_distance = calculate_best_delta_distance(data, calculated_tour->tour_by_city_id, i, j, k);
-                    printf("Delta distance: %f\n", delta_distance);
+
+                    if (delta_distance < 0.0)
+                    {
+                        improved = 1;
+                        printf("Improvement found: %.2f\n", delta_distance);
+                        break;
+                    }
                 }
             }
         }
 
         iterations++;
     }
+
+    printf("Total iterations: %d\n", iterations);
+    printf("Final distance: %.2f\n", current_distance);
 }
 
 double generate_random_tour_with_distance(TSPData *problem, Tour *tour)
