@@ -71,22 +71,56 @@ void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour)
 
     printf("Initial Distance: %d\n", initial_distance);
 
-    int (*distance_matrix)[n] = malloc(sizeof(int[n][n]));
+    // int (*distance_matrix)[n] = malloc(sizeof(int[n][n]));
 
-    for (int i = 0; i < n; i++)
+    // for (int i = 0; i < n; i++)
+    // {
+	// 	for (int j = 0; j < n; j++)
+    //     {
+    //         const City *city1 = &problem->cities[tour->tour_by_city_id[i]];
+    //         const City *city2 = &problem->cities[tour->tour_by_city_id[j]];
+
+    //         distance_matrix[i][j] = calculate_euclidean_distance(city1, city2);
+
+    //         printf("%d ", distance_matrix[i][j]);
+	// 	}
+	// }
+
+    // City indexes
+    int i, j, k, a, b, c, d, e, f, improving = 1;
+
+    int best_move = 0;
+
+    while (improving)
     {
-		for (int j = 0; j < n; j++)
+        improving = 0;
+        int improved_this_iteration = 0;
+
+        int case_1, case_2, case_3 = 0; // Edges
+
+        for (case_1 = 0; case_1 < n; case_1++)
         {
-            const City *city1 = &problem->cities[tour->tour_by_city_id[i]];
-            const City *city2 = &problem->cities[tour->tour_by_city_id[j]];
+            i = case_1;
+            a = tour->tour_by_city_id[i]; // Index i
+            b = tour->tour_by_city_id[(i+1) % n]; // Index i+1
 
-            distance_matrix[i][j] = calculate_euclidean_distance(city1, city2);
+            for (case_2 = 1; case_2 < n - 2; case_2++)
+            {
+                j = (i + case_2) % n;
+                c = tour->tour_by_city_id[j];
+                d = tour->tour_by_city_id[(j+1) % n];
 
-            printf("%d ", distance_matrix[i][j]);
-		}
-	}
+                for (case_3 = case_2 + 1; case_3 < n; case_3++)
+                {
+                    k = (i + case_3) % n;
+                    e = tour->tour_by_city_id[k];
+                    f = tour->tour_by_city_id[(k+1) % n];
 
-
+                    
+                }
+            }
+        }
+    }
 
     // improve_tour_3opt(problem, tour->tour_by_city_id, &initial_distance, time_limit);
 
