@@ -10,6 +10,7 @@
         "algorithm": "c",
         "typeinfo": "c",
         "type_traits": "c",
-        "nearest_neighbour.h": "c"
+        "nearest_neighbour.h": "c",
+        "time.h": "c"
     }
 }

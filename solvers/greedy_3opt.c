@@ -1,7 +1,6 @@
 #include "greedy_3opt.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <time.h>
 
 #include "../tsp_structures.h"
 #include "../tsp_utils.h"
@@ -161,11 +160,11 @@ void apply_3opt_move(int* path, int best_move, int i, int j, int k, int n)
 
 void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour)
 {
+    clock_t start_time = clock();
+
     Greedy3OptSolver *solver = (Greedy3OptSolver*) self;
-
-    time_t start_time = time(NULL);
-
     int n = problem->dimension;
+
     int (*distance_matrix)[n] = malloc(sizeof(int[n][n]));
 
     for (int i = 0; i < n; i++)
@@ -189,11 +188,6 @@ void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour)
 
     while (improving)
     {
-        if (time(NULL) - start_time >= time_limit)
-        {
-            break;
-        }
-
         improving = 0;
         int should_break_loop = 0;
 
@@ -201,6 +195,16 @@ void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour)
 
         for (case_1 = 0; case_1 < n && !should_break_loop; case_1++)
         {
+            clock_t current_time = clock();
+            double elapsed_seconds = (double)(current_time - start_time) / CLOCKS_PER_SEC;
+            
+            if (elapsed_seconds >= time_limit)
+            {
+                tour->early_stop = 1;
+                should_break_loop = 1;
+                break;
+            }
+
             i = case_1;
             a = tour->tour_by_city_id[i]; // Index i
             b = tour->tour_by_city_id[(i+1) % n]; // Index i+1
@@ -231,9 +235,6 @@ void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour)
             }
         }
     }
-
-    clock_t end_time = clock();
-    tour->elapsed_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
 
     tour->problem_name = problem->name;
     free(distance_matrix);
