@@ -8,6 +8,8 @@
 
 // https://www.geeksforgeeks.org/travelling-salesman-problem-greedy-approach/
 
+#define MAX_PROBLEM_SIZE 20000
+
 typedef struct {
     double **matrix;
     TSPData *problem;
@@ -27,7 +29,7 @@ GreedyData* should_create_distance_matrix(TSPData *problem)
     GreedyData *data = malloc(sizeof(GreedyData));
     data->problem = problem;
     
-    if (problem->dimension <= 5000)
+    if (problem->dimension <= MAX_PROBLEM_SIZE)
     {
         printf("Creating distance matrix\n");
         int n = problem->dimension;
@@ -47,6 +49,8 @@ GreedyData* should_create_distance_matrix(TSPData *problem)
     {
         data->matrix = NULL;
     }
+
+    printf("Distance matrix created\n");
     
     return data;
 }
@@ -57,18 +61,41 @@ void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit, Tour *cal
 
     clock_t start_time = clock();
 
+    GreedyData* data = should_create_distance_matrix(problem);
     double current_distance = generate_random_tour_with_distance(problem, calculated_tour);
 
-    GreedyData* data = should_create_distance_matrix(problem);
+    while (1)
+    {
+        clock_t current_time = clock();
+        double elapsed_time = (double)(current_time - start_time) / CLOCKS_PER_SEC;
+
+        if (elapsed_time >= time_limit)
+        {
+            printf("Time limit reached. Terminating early.\n\n");
+            break;
+        }
+
+    }
 }
 
 double generate_random_tour_with_distance(TSPData *problem, Tour *tour)
 {
+    srand(time(NULL));
+
     int n = problem->dimension;
     double total_distance = 0.0;
     tour->tour_by_city_id = (int*)malloc((problem->dimension + 1) * sizeof(int));
 
-    srand(time(NULL));
+    if (tour->tour_by_city_id != NULL)
+    {
+        free(tour->tour_by_city_id);
+    }
+
+    if (tour->tour_by_city_id == NULL)
+    {
+        printf("Failed to allocate memory for tour.\n");
+        return -1.0;
+    }
  
     for (int i = 0; i < n; i++)
     {
