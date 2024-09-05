@@ -105,21 +105,42 @@ double calculate_best_delta_distance(GreedyData *data, int *tour, int i, int j, 
     int best_move = 0;
     for (int m = 1; m < 7; m++)
     {
-        if (deltas[m] > best_delta)
+        if (deltas[m] < best_delta)
         {
             best_delta = deltas[m];
             best_move = m;
         }
     }
 
-    if (best_delta > 0.0)
+    if (best_delta < 0.0)
     {
-        if (best_move == 1)
+        switch (best_move)
         {
-            printf("Reversing segment from %d to %d\n", i, j);
-            reverse_segment(tour, i, j);
+            case 1:
+                reverse_segment(tour, i, j-1);
+                break;
+            case 2:
+                reverse_segment(tour, j, k-1);
+                break;
+            case 3:
+                reverse_segment(tour, i, k-1);
+                break;
+            case 4:
+                reverse_segment(tour, i, j-1);
+                reverse_segment(tour, j, k-1);
+                break;
+            case 5:
+                reverse_segment(tour, i, k-1);
+                reverse_segment(tour, i, j-1);
+                break;
+            case 6:
+                reverse_segment(tour, i, k-1);
+                reverse_segment(tour, j, k-1);
+                break;
         }
     }
+
+    return best_delta;
 }
 
 void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit, Tour *calculated_tour)
@@ -160,7 +181,7 @@ void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit, Tour *cal
                 for (int k = j + 1; k < n; k++)
                 {
                     double delta_distance = calculate_best_delta_distance(data, calculated_tour->tour_by_city_id, i, j, k);
-                    printf("Calculating delta distances for i = %d, j = %d, k = %d\n", i, j, k);
+                    printf("Delta distance: %f\n", delta_distance);
                 }
             }
         }
