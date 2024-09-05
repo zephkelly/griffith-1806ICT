@@ -7,6 +7,7 @@
         "tsp_utils.h": "c",
         "random": "c",
         "limits": "c",
-        "algorithm": "c"
+        "algorithm": "c",
+        "typeinfo": "c"
     }
 }

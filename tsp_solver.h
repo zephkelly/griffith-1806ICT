@@ -6,7 +6,7 @@
 typedef struct Solver Solver;
 
 struct Solver {
-    void (*solve)(Solver *self, TSPData *problem, int time_limit);
+    Tour (*solve)(Solver *self, TSPData *problem, int time_limit);
     void (*free)(Solver *self);
 };
 

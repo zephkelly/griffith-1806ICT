@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "greedy_3opt.h"
+#include "../tsp_structures.h"
 
 // https://www.geeksforgeeks.org/travelling-salesman-problem-greedy-approach/
 
@@ -14,7 +15,9 @@ Solver* create_greedy_3opt_solver()
     return (Solver*) solver;
 }
 
-void solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit)
+Tour solve_greedy_3opt(Solver *self, TSPData *problem, int time_limit)
 {
-    
+    Tour tour;
+
+    return tour;
 }

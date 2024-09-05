@@ -1,5 +1,6 @@
 #ifndef TSP_STRUCTURES_H
 #define TSP_STRUCTURES_H
+#include <time.h>
 
 typedef struct {
     int id;
@@ -23,9 +24,11 @@ typedef struct {
 } TSPData;
 
 typedef struct {
-    char name[50];
-    int tour_length;
-    int *tour_by_city_id;
+    char* problem_name;
+    char* solver_name;
+    time_t time_taken;
+    double tour_distance;
+    int* tour_by_city_id;
 } Tour;
 
 #endif
