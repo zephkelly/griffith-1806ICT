@@ -71,18 +71,35 @@ void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour)
 
     printf("Initial Distance: %d\n", initial_distance);
 
-    improve_tour_3opt(problem, tour->tour_by_city_id, &initial_distance, time_limit);
+    int (*distance_matrix)[n] = malloc(sizeof(int[n][n]));
 
-    tour->tour_distance = 0.0;
-
-    for (int i = 0; i < n - 1; i++)
+    for (int i = 0; i < n; i++)
     {
-        tour->tour_distance += calculate_euclidean_distance(&problem->cities[tour->tour_by_city_id[i]], &problem->cities[tour->tour_by_city_id[(i+1)%n]]);
-    }
+		for (int j = 0; j < n; j++)
+        {
+            const City *city1 = &problem->cities[tour->tour_by_city_id[i]];
+            const City *city2 = &problem->cities[tour->tour_by_city_id[j]];
 
-    tour->tour_by_city_id[n-1] = -1;
-    tour->tour_distance += calculate_euclidean_distance(&problem->cities[tour->tour_by_city_id[n-1]], &problem->cities[tour->tour_by_city_id[0]]);
-    tour->cities_visited = n;
+            distance_matrix[i][j] = calculate_euclidean_distance(city1, city2);
+
+            printf("%d ", distance_matrix[i][j]);
+		}
+	}
+
+
+
+    // improve_tour_3opt(problem, tour->tour_by_city_id, &initial_distance, time_limit);
+
+    // tour->tour_distance = 0.0;
+
+    // for (int i = 0; i < n - 1; i++)
+    // {
+    //     tour->tour_distance += calculate_euclidean_distance(&problem->cities[tour->tour_by_city_id[i]], &problem->cities[tour->tour_by_city_id[(i+1)%n]]);
+    // }
+
+    // tour->tour_by_city_id[n-1] = -1;
+    // tour->tour_distance += calculate_euclidean_distance(&problem->cities[tour->tour_by_city_id[n-1]], &problem->cities[tour->tour_by_city_id[0]]);
+    // tour->cities_visited = n;
 }
 
 typedef struct {
