@@ -13,6 +13,12 @@ void improve_tour_3opt(TSPData *problem, int *path, int *total_distance, int tim
 
 void reverse(int *path, int i, int j);
 
+typedef struct {
+    int delta;
+    int best_case;
+} DeltaMove;
+
+
 Solver* create_greedy_3opt_solver()
 {
     Greedy3OptSolver* solver = malloc(sizeof(Greedy3OptSolver));
@@ -62,6 +68,41 @@ int generate_random_tour_with_distance(TSPData *problem, Tour *tour)
     return total_distance;
 }
 
+DeltaMove calculate_3opt_best_move(void *dist, int a, int b, int c, int d, int e, int f, int dimensions)
+{
+    int (*matrix)[dimensions] = dist;
+
+	int deleted_edges = matrix[a][b] + matrix[c][d] + matrix[e][f];
+
+	int delta_options[8];
+
+	delta_options[0] = 0; // No move
+	delta_options[1] = matrix[a][e] + matrix[b][f] - matrix[a][b] - matrix[e][f];
+	delta_options[2] = matrix[c][e] + matrix[d][f] - matrix[c][d] - matrix[e][f];
+	delta_options[3] = matrix[a][c] + matrix[b][d] - matrix[a][b] - matrix[c][d];
+	delta_options[4] = matrix[a][c] + matrix[b][e] + matrix[d][f] - deleted_edges;
+	delta_options[5] = matrix[a][e] + matrix[d][b] + matrix[c][f] - deleted_edges;
+	delta_options[6] = matrix[a][d] + matrix[e][c] + matrix[b][f] - deleted_edges;
+	delta_options[7] = matrix[a][d] + matrix[e][b] + matrix[c][f] - deleted_edges;
+
+	int best_delta = 0;
+	int best_move = 0;
+	int i;
+
+	for (i = 1; i < 8; i++)
+    {
+		if (delta_options[i] < 0 && delta_options[i] < best_delta)
+        {
+			best_move = i;
+			best_delta = delta_options[i];
+		}
+	}
+
+    DeltaMove best_delta_move = {best_delta, best_move};
+
+    return best_delta_move;
+}
+
 void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour)
 {
     Greedy3OptSolver *solver = (Greedy3OptSolver*) self;
@@ -71,20 +112,18 @@ void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour)
 
     printf("Initial Distance: %d\n", initial_distance);
 
-    // int (*distance_matrix)[n] = malloc(sizeof(int[n][n]));
+    int (*distance_matrix)[n] = malloc(sizeof(int[n][n]));
 
-    // for (int i = 0; i < n; i++)
-    // {
-	// 	for (int j = 0; j < n; j++)
-    //     {
-    //         const City *city1 = &problem->cities[tour->tour_by_city_id[i]];
-    //         const City *city2 = &problem->cities[tour->tour_by_city_id[j]];
+    for (int i = 0; i < n; i++)
+    {
+		for (int j = 0; j < n; j++)
+        {
+            const City *city1 = &problem->cities[tour->tour_by_city_id[i]];
+            const City *city2 = &problem->cities[tour->tour_by_city_id[j]];
 
-    //         distance_matrix[i][j] = calculate_euclidean_distance(city1, city2);
-
-    //         printf("%d ", distance_matrix[i][j]);
-	// 	}
-	// }
+            distance_matrix[i][j] = calculate_euclidean_distance(city1, city2);
+		}
+	}
 
     // City indexes
     int i, j, k, a, b, c, d, e, f, improving = 1;
@@ -116,7 +155,8 @@ void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour)
                     e = tour->tour_by_city_id[k];
                     f = tour->tour_by_city_id[(k+1) % n];
 
-                    
+                    DeltaMove best_move = calculate_3opt_best_move(distance_matrix, a, b, c, d, e, f, n);
+                    printf("Best Move: %d\n", best_move.delta);
                 }
             }
         }
@@ -136,21 +176,6 @@ void solve(Solver *self, TSPData *problem, int time_limit, Tour *tour)
     // tour->cities_visited = n;
 }
 
-typedef struct {
-    int delta;
-    int best_case;
-} BestMove;
-
-
-BestMove calculate_3opt_best_move(TSPData *problem, int *path, int i, int j, int k)
-{
-    int max_delta = 0;
-    int best_case = 0;
-    BestMove best_move = {max_delta, best_case};
-
-    return best_move;
-}
-
 void reverse(int *path, int start, int end)
 {
     while (start < end) {
@@ -165,36 +190,4 @@ void reverse(int *path, int start, int end)
 void apply_3opt_move(int *path, int best_move, int i, int j, int k, int n)
 {
 
-}
-
-void improve_tour_3opt(TSPData *problem, int *path, int *total_distance, int time_limit)
-{
-    int n = problem->dimension;
-    time_t start_time = time(NULL);
-    int improvements = 1;
-    
-    while (improvements && (time(NULL) - start_time < time_limit))
-    {
-        improvements = 0;
-
-        for (int i = 0; i < n - 2; i++)
-        {
-            for (int j = i + 1; j < n - 1; j++)
-            {
-                for (int k = j + 1; k < n; k++)
-                {
-                    BestMove best_move = calculate_3opt_best_move(problem, path, i, j, k);
-
-                    if (best_move.best_case != 0)
-                    {
-                        apply_3opt_move(path, best_move.best_case, i, j, k, n);
-                        *total_distance -= best_move.delta;
-
-                        printf("Total Distance: %d\n", *total_distance);
-                        improvements = 1;
-                    }
-                }
-            }
-        }
-    }
 }
