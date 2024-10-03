@@ -48,16 +48,10 @@ int main()
 
     int bitstream_length = read_bitstream_length(file);
 
-    //loop and print the sorted table
-    for (int i = 0; i < FREQUENCY_TABLE_SIZE; i++)
-    {
-        printf("Character: %c, Frequency: %d\n", sorted_table[i].character, sorted_table[i].frequency);
-    }
-
     HuffmanNode* root = build_huffman_tree(sorted_table, FREQUENCY_TABLE_SIZE);
 
-    // printf("Decoded message:\n");
-    // decode_message(file, root, bitstream_length);
+    //print root of the tree char and frequency
+    printf("Root of the tree: Character: %c, Frequency: %d\n", root->character, root->frequency);
 
     free(frequency_table);
     free(sorted_table);
@@ -160,7 +154,8 @@ HuffmanNode* new_huffman_node(char character, int frequency)
     return node;
 }
 
-void swap_nodes(HuffmanNode** a, HuffmanNode** b) {
+void swap_nodes(HuffmanNode** a, HuffmanNode** b)
+{
     HuffmanNode* temp = *a;
     *a = *b;
     *b = temp;
@@ -168,7 +163,7 @@ void swap_nodes(HuffmanNode** a, HuffmanNode** b) {
 
 void insert_min_heap(MinHeap* min_heap, HuffmanNode* node)
 {
-    if (min_heap->size >= min_heap->max_size)
+    if (min_heap->size > min_heap->max_size)
     {
         fprintf(stderr, "Error: Heap is full, cannot insert more elements\n");
         return;
@@ -185,7 +180,7 @@ void insert_min_heap(MinHeap* min_heap, HuffmanNode* node)
         HuffmanNode* current_node = min_heap->array[current_index];
         HuffmanNode* parent_node = min_heap->array[parent_index];
 
-        if (current_node->frequency >= parent_node->frequency)
+        if (current_node->frequency > parent_node->frequency)
         {
             break;
         }
@@ -193,6 +188,17 @@ void insert_min_heap(MinHeap* min_heap, HuffmanNode* node)
         swap_nodes(&min_heap->array[current_index], &min_heap->array[parent_index]);
         current_index = parent_index;
     }
+}
+
+HuffmanNode* extract_min(MinHeap* minHeap)
+{
+    HuffmanNode* min = minHeap->array[0];
+    minHeap->array[0] = minHeap->array[minHeap->size - 1];
+    --minHeap->size;
+    
+    // Re-heapify the min heap
+
+    return min;
 }
 
 HuffmanNode* build_huffman_tree(CharacterFrequency* sorted_table, int size)
@@ -220,7 +226,19 @@ HuffmanNode* build_huffman_tree(CharacterFrequency* sorted_table, int size)
         }
     }
 
-    return NULL;
+    while (min_heap->size > 1)
+    {
+        HuffmanNode* left = extract_min(min_heap);
+        HuffmanNode* right = extract_min(min_heap);
+
+        HuffmanNode* internal_node = new_huffman_node('$', left->frequency + right->frequency);
+        internal_node->left = left;
+        internal_node->right = right;
+
+        insert_min_heap(min_heap, internal_node);
+    }
+
+    return extract_min(min_heap);
 }
 
 void decode_message(FILE *file, HuffmanNode *root, int bitstream_length)
