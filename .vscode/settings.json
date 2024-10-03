@@ -4,6 +4,7 @@
         "Bitstream"
     ],
     "files.associations": {
-        "vector": "c"
+        "vector": "c",
+        "string_view": "c"
     }
 }

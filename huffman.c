@@ -19,12 +19,11 @@ typedef struct MinHeap {
 } MinHeap;
 
 int* read_frequency_table(FILE *file);
+int* sort_frequency_table(int *frequency_table);
+
 int read_bitstream_length(FILE *file);
 
 HuffmanNode* new_huffman_node(char character, int frequency);
-MinHeap* create_min_heap(unsigned capacity);
-void swap_nodes(HuffmanNode** a, HuffmanNode** b);
-void insert_min_heap_node(MinHeap* min_heap, HuffmanNode* node);
 HuffmanNode* build_huffman_tree(int *freq_table);
 
 void decode_message(FILE *file, HuffmanNode *root, int bitstream_length);
@@ -40,6 +39,14 @@ int main()
     }
 
     int *frequency_table = read_frequency_table(file);
+    int *sorted_table = sort_frequency_table(frequency_table);
+
+    //print sorted
+    for (int i = 0; i < FREQUENCY_TABLE_SIZE; i++)
+    {
+        printf("%c: %d\n", i, sorted_table[i]);
+    }
+
     int bitstream_length = read_bitstream_length(file);
 
     HuffmanNode* root = build_huffman_tree(frequency_table);
@@ -55,7 +62,7 @@ int main()
 
 int* read_frequency_table(FILE *file)
 {
-    int *frequency_table = calloc(FREQUENCY_TABLE_SIZE, sizeof(int));
+    int *frequency_table = malloc(FREQUENCY_TABLE_SIZE * sizeof(int));
 
     if (frequency_table == NULL)
     {
@@ -71,12 +78,35 @@ int* read_frequency_table(FILE *file)
         exit(1);
     }
 
-    for (int i = 0; i < FREQUENCY_TABLE_SIZE; i++)
+    return frequency_table;
+}
+
+int* sort_frequency_table(int *frequency_table)
+{
+    int *sorted_table = malloc(FREQUENCY_TABLE_SIZE * sizeof(int));
+
+    if (sorted_table == NULL)
     {
-        printf("Frequency of '%c': %d\n", (i < 32 || i >= 127) ? '.' : i, frequency_table[i]);
+        fprintf(stderr, "Error: Memory allocation failed\n");
+        exit(1);
     }
 
-    return frequency_table;
+    memcpy(sorted_table, frequency_table, FREQUENCY_TABLE_SIZE * sizeof(int));
+
+    for (int i = 0; i < FREQUENCY_TABLE_SIZE; i++)
+    {
+        for (int j = i + 1; j < FREQUENCY_TABLE_SIZE; j++)
+        {
+            if (sorted_table[i] > sorted_table[j])
+            {
+                int temp = sorted_table[i];
+                sorted_table[i] = sorted_table[j];
+                sorted_table[j] = temp;
+            }
+        }
+    }
+
+    return sorted_table;
 }
 
 int read_bitstream_length(FILE *file)
@@ -91,36 +121,6 @@ int read_bitstream_length(FILE *file)
 
     printf("Bitstream length: %d\n", bitstream_length);
     return bitstream_length;
-}
-
-MinHeap* create_min_heap(unsigned max_size)
-{
-    MinHeap* min_heap = (MinHeap*)malloc(sizeof(MinHeap));
-
-    if (min_heap == NULL)
-    {
-        fprintf(stderr, "Error: Memory allocation failed\n");
-        exit(1);
-    }
-
-    min_heap->size = 0;
-    min_heap->max_size = max_size;
-    min_heap->array = (HuffmanNode**)malloc(min_heap->max_size * sizeof(HuffmanNode*));
-
-    if (min_heap->array == NULL)
-    {
-        fprintf(stderr, "Error: Memory allocation failed\n");
-        exit(1);
-    }
-
-    return min_heap;
-}
-
-void swap_nodes(HuffmanNode** a, HuffmanNode** b)
-{
-    HuffmanNode* temp = *a;
-    *a = *b;
-    *b = temp;
 }
 
 HuffmanNode* new_huffman_node(char character, int frequency)
@@ -141,47 +141,8 @@ HuffmanNode* new_huffman_node(char character, int frequency)
     return node;
 }
 
-void insert_min_heap_node(MinHeap* min_heap, HuffmanNode* node)
-{
-    if (min_heap->size >= min_heap->max_size)
-    {
-        fprintf(stderr, "Error: Heap is full\n");
-        return;
-    }
-    
-    unsigned current_index = min_heap->size;
-    min_heap->array[current_index] = node;
-    min_heap->size++;
-
-    while (current_index > 0)
-    {
-        unsigned int parent_index = (current_index - 1) / 2;
-
-        HuffmanNode* current_node = min_heap->array[current_index];
-        HuffmanNode* parent_node = min_heap->array[parent_index];
-
-        if (current_node->frequency >= parent_node->frequency)
-        {
-            break;
-        }
-
-        swap_nodes(&min_heap->array[current_index], &min_heap->array[parent_index]);
-        current_index = parent_index;
-    }
-}
-
 HuffmanNode* build_huffman_tree(int *frequency_table)
 {
-    MinHeap* min_heap = create_min_heap(FREQUENCY_TABLE_SIZE);
-
-    for (int i = 0; i < FREQUENCY_TABLE_SIZE; i++)
-    {
-        if (frequency_table[i] > 0)
-        {
-            HuffmanNode* new_node = new_huffman_node(i, frequency_table[i]);
-            insert_min_heap_node(min_heap, new_node);
-        }
-    }
 
     return NULL;
 }
