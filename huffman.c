@@ -26,6 +26,7 @@ int main()
     }
 
     int *frequency_table = read_frequency_table(file);
+    int bitstream_length = read_bitstream_length(file);
 
     free(frequency_table);
     fclose(file);
@@ -57,7 +58,16 @@ int* read_frequency_table(FILE *file)
 
 int read_bitstream_length(FILE *file)
 {
-    // read 1 4-byte integer
+    int32_t bitstream_length;
+
+    if (fread(&bitstream_length, sizeof(int), 1, file) != 1)
+    {
+        fprintf(stderr, "Error: Could not read bitstream length\n");
+        exit(1);
+    }
+
+    printf("Bitstream length: %d\n", bitstream_length);
+    return bitstream_length;
 }
 
 HuffmanNode* build_huffman_tree(int *frequency_table)
