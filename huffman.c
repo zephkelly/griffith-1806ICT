@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <math.h>
+#include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -42,6 +44,10 @@ int main()
 
     HuffmanNode* root = build_huffman_tree(frequency_table);
 
+    printf("Decoded message:\n");
+    decode_message(file, root, bitstream_length);
+    printf("\n");
+
     free(frequency_table);
     fclose(file);
     return 0;
@@ -49,7 +55,7 @@ int main()
 
 int* read_frequency_table(FILE *file)
 {
-    int *frequency_table = malloc(FREQUENCY_TABLE_SIZE * sizeof(int));
+    int *frequency_table = calloc(FREQUENCY_TABLE_SIZE, sizeof(int));
 
     if (frequency_table == NULL)
     {
@@ -57,14 +63,17 @@ int* read_frequency_table(FILE *file)
         exit(1);
     }
 
+    size_t read_count = fread(frequency_table, sizeof(int), FREQUENCY_TABLE_SIZE, file);
+    if (read_count != FREQUENCY_TABLE_SIZE)
+    {
+        fprintf(stderr, "Error: Could not read the entire frequency table\n");
+        free(frequency_table);
+        exit(1);
+    }
+
     for (int i = 0; i < FREQUENCY_TABLE_SIZE; i++)
     {
-        if (fread(&frequency_table[i], sizeof(int), 1, file) != 1)
-        {
-            fprintf(stderr, "Error: Could not read frequency table\n");
-            free(frequency_table);
-            exit(1);
-        }
+        printf("Frequency of '%c': %d\n", (i < 32 || i >= 127) ? '.' : i, frequency_table[i]);
     }
 
     return frequency_table;
@@ -110,7 +119,7 @@ MinHeap* create_min_heap(unsigned max_size)
 void swap_nodes(HuffmanNode** a, HuffmanNode** b)
 {
     HuffmanNode* temp = *a;
-    a = b;
+    *a = *b;
     *b = temp;
 }
 
@@ -179,5 +188,5 @@ HuffmanNode* build_huffman_tree(int *frequency_table)
 
 void decode_message(FILE *file, HuffmanNode *root, int bitstream_length)
 {
-    // decode the message
+
 }
