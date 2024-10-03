@@ -107,6 +107,13 @@ MinHeap* create_min_heap(unsigned max_size)
     return min_heap;
 }
 
+void swap_nodes(HuffmanNode** a, HuffmanNode** b)
+{
+    HuffmanNode* temp = *a;
+    a = b;
+    *b = temp;
+}
+
 HuffmanNode* new_huffman_node(char character, int frequency)
 {
     HuffmanNode* node = (HuffmanNode*)malloc(sizeof(HuffmanNode));
@@ -119,7 +126,8 @@ HuffmanNode* new_huffman_node(char character, int frequency)
 
     node->character = character;
     node->frequency = frequency;
-    node->left = node->right = NULL;
+    node->left = NULL;
+    node->right = NULL;
 
     return node;
 }
@@ -132,9 +140,25 @@ void insert_min_heap_node(MinHeap* min_heap, HuffmanNode* node)
         return;
     }
     
-    unsigned i = min_heap->size;
-    min_heap->array[i] = node;
+    unsigned current_index = min_heap->size;
+    min_heap->array[current_index] = node;
     min_heap->size++;
+
+    while (current_index > 0)
+    {
+        unsigned int parent_index = (current_index - 1) / 2;
+
+        HuffmanNode* current_node = min_heap->array[current_index];
+        HuffmanNode* parent_node = min_heap->array[parent_index];
+
+        if (current_node->frequency >= parent_node->frequency)
+        {
+            break;
+        }
+
+        swap_nodes(&min_heap->array[current_index], &min_heap->array[parent_index]);
+        current_index = parent_index;
+    }
 }
 
 HuffmanNode* build_huffman_tree(int *frequency_table)
