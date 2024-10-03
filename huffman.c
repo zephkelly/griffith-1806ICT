@@ -48,7 +48,7 @@ int main()
 
     int bitstream_length = read_bitstream_length(file);
 
-    HuffmanNode* root = build_huffman_tree(frequency_table);
+    // HuffmanNode* root = build_huffman_tree(frequency_table);
 
     printf("Decoded message:\n");
     // decode_message(file, root, bitstream_length);
@@ -71,6 +71,7 @@ int* read_frequency_table(FILE *file)
     }
 
     size_t read_count = fread(frequency_table, sizeof(int), FREQUENCY_TABLE_SIZE, file);
+
     if (read_count != FREQUENCY_TABLE_SIZE)
     {
         fprintf(stderr, "Error: Could not read the entire frequency table\n");
@@ -79,6 +80,39 @@ int* read_frequency_table(FILE *file)
     }
 
     return frequency_table;
+}
+
+CharacterFrequency* sort_frequency_table(int *frequency_table)
+{
+    CharacterFrequency* sorted_table = malloc(FREQUENCY_TABLE_SIZE * sizeof(CharacterFrequency));
+
+    if (sorted_table == NULL)
+    {
+        fprintf(stderr, "Error: Memory allocation failed\n");
+        exit(1);
+    }
+
+    for (int i = 0; i < FREQUENCY_TABLE_SIZE; i++)
+    {
+        sorted_table[i].character = (char)i;
+        sorted_table[i].frequency = frequency_table[i];
+    }
+
+    // Bubble sort in ascending order
+    for (int i = 0; i < FREQUENCY_TABLE_SIZE - 1; i++)
+    {
+        for (int j = 0; j < FREQUENCY_TABLE_SIZE - i - 1; j++)
+        {
+            if (sorted_table[j].frequency > sorted_table[j + 1].frequency)
+            {
+                CharacterFrequency temp = sorted_table[j];
+                sorted_table[j] = sorted_table[j + 1];
+                sorted_table[j + 1] = temp;
+            }
+        }
+    }
+
+    return sorted_table;
 }
 
 int read_bitstream_length(FILE *file)
