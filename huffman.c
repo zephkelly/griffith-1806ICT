@@ -162,12 +162,28 @@ HuffmanNode* build_huffman_tree(CharacterFrequency* sorted_table, int size)
     HuffmanNode *right;
     HuffmanNode *top;
 
-    MinHeap *min_heap = create_min_heap(FREQUENCY_TABLE_SIZE);
+    int non_zero_count = 0;
 
-    // Populate min heap array with huffman nodes
-    for (int i = 0; i < size; ++i)
+    for (int i = 0; i < size; i++)
     {
-        min_heap->array[i] = new_huffman_node(sorted_table[i].character, sorted_table[i].frequency);
+        if (sorted_table[i].frequency > 0)
+        {
+            non_zero_count++;
+        }
+    }
+    
+    MinHeap* minHeap = create_min_heap(non_zero_count);
+
+    // Only add non-zero frequency characters to the min heap
+    for (int i = 0, j = 0; i < size; i++)
+    {
+        if (sorted_table[i].frequency > 0)
+        {
+            minHeap->array[j] = new_huffman_node(sorted_table[i].character, sorted_table[i].frequency);
+            //print node
+            printf("Character: %c, Frequency: %d\n", minHeap->array[j]->character, minHeap->array[j]->frequency);
+            j++;
+        }
     }
 
     return NULL;
