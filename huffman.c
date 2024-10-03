@@ -29,7 +29,7 @@ CharacterFrequency* sort_frequency_table(int *frequency_table);
 int read_bitstream_length(FILE *file);
 
 HuffmanNode* new_huffman_node(char character, int frequency);
-HuffmanNode* build_huffman_tree(int *freq_table);
+HuffmanNode* build_huffman_tree(CharacterFrequency* sorted_table, int size);
 
 void decode_message(FILE *file, HuffmanNode *root, int bitstream_length);
 
@@ -48,7 +48,7 @@ int main()
 
     int bitstream_length = read_bitstream_length(file);
 
-    // HuffmanNode* root = build_huffman_tree(frequency_table);
+    HuffmanNode* root = build_huffman_tree(sorted_table, FREQUENCY_TABLE_SIZE);
 
     printf("Decoded message:\n");
     // decode_message(file, root, bitstream_length);
@@ -147,8 +147,28 @@ HuffmanNode* new_huffman_node(char character, int frequency)
     return node;
 }
 
-HuffmanNode* build_huffman_tree(int *frequency_table)
+MinHeap* create_min_heap(unsigned capacity)
 {
+    MinHeap* minHeap = (MinHeap*)malloc(sizeof(MinHeap));
+    minHeap->size = 0;
+    minHeap->max_size = capacity;
+    minHeap->array = (HuffmanNode**)malloc(minHeap->max_size * sizeof(HuffmanNode*));
+    return minHeap;
+}
+
+HuffmanNode* build_huffman_tree(CharacterFrequency* sorted_table, int size)
+{
+    HuffmanNode *left;
+    HuffmanNode *right;
+    HuffmanNode *top;
+
+    MinHeap *min_heap = create_min_heap(FREQUENCY_TABLE_SIZE);
+
+    //print the min heap
+    for (int i = 0; i < FREQUENCY_TABLE_SIZE; i++)
+    {
+        printf("%c: %d\n", sorted_table[i].character, sorted_table[i].frequency);
+    }
 
     return NULL;
 }
