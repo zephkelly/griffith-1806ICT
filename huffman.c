@@ -50,8 +50,7 @@ int main()
 
     HuffmanNode* root = build_huffman_tree(sorted_table, FREQUENCY_TABLE_SIZE);
 
-    //print root of the tree char and frequency
-    printf("Root of the tree: Character: %c, Frequency: %d\n", root->character, root->frequency);
+    decode_message(file, root, bitstream_length);
 
     free(frequency_table);
     free(sorted_table);
@@ -124,6 +123,7 @@ int read_bitstream_length(FILE *file)
         exit(1);
     }
 
+    printf("Bitstream length: %d\n", bitstream_length);
     return bitstream_length;
 }
 
@@ -163,7 +163,7 @@ void swap_nodes(HuffmanNode** a, HuffmanNode** b)
 
 void insert_min_heap(MinHeap* min_heap, HuffmanNode* node)
 {
-    if (min_heap->size > min_heap->max_size)
+    if (min_heap->size >= min_heap->max_size)
     {
         fprintf(stderr, "Error: Heap is full, cannot insert more elements\n");
         return;
@@ -190,13 +190,34 @@ void insert_min_heap(MinHeap* min_heap, HuffmanNode* node)
     }
 }
 
+
+void min_heapify(MinHeap* min_heap, int idx)
+{
+    int smallest = idx;
+    int left = 2 * idx + 1;
+    int right = 2 * idx + 2;
+
+    if (left < min_heap->size && min_heap->array[left]->frequency < min_heap->array[smallest]->frequency)
+        smallest = left;
+
+    if (right < min_heap->size && min_heap->array[right]->frequency < min_heap->array[smallest]->frequency)
+        smallest = right;
+
+    if (smallest != idx)
+    {
+        swap_nodes(&min_heap->array[idx], &min_heap->array[smallest]);
+        min_heapify(min_heap, smallest);
+    }
+}
+
+
 HuffmanNode* extract_min(MinHeap* minHeap)
 {
     HuffmanNode* min = minHeap->array[0];
     minHeap->array[0] = minHeap->array[minHeap->size - 1];
-    --minHeap->size;
+    minHeap->size = minHeap->size - 1;
     
-    // Re-heapify the min heap
+    min_heapify(minHeap, 0);
 
     return min;
 }
@@ -226,6 +247,7 @@ HuffmanNode* build_huffman_tree(CharacterFrequency* sorted_table, int size)
         }
     }
 
+    // Extract the lowest frequency nodes and combine into single internal node
     while (min_heap->size > 1)
     {
         HuffmanNode* left = extract_min(min_heap);
