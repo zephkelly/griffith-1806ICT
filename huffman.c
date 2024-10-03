@@ -10,9 +10,19 @@ typedef struct HuffmanNode {
     struct HuffmanNode *left, *right;
 } HuffmanNode;
 
+typedef struct MinHeap {
+    unsigned size;
+    unsigned max_size;
+    HuffmanNode** array;
+} MinHeap;
+
 int* read_frequency_table(FILE *file);
 int read_bitstream_length(FILE *file);
+
+MinHeap* create_min_heap(unsigned capacity);
 HuffmanNode* build_huffman_tree(int *freq_table);
+
+
 void decode_message(FILE *file, HuffmanNode *root, int bitstream_length);
 
 int main()
@@ -27,6 +37,8 @@ int main()
 
     int *frequency_table = read_frequency_table(file);
     int bitstream_length = read_bitstream_length(file);
+
+    HuffmanNode* root = build_huffman_tree(frequency_table);
 
     free(frequency_table);
     fclose(file);
@@ -70,9 +82,42 @@ int read_bitstream_length(FILE *file)
     return bitstream_length;
 }
 
+MinHeap* create_min_heap(unsigned max_size)
+{
+    MinHeap* min_heap = (MinHeap*)malloc(sizeof(MinHeap));
+
+    if (min_heap == NULL)
+    {
+        fprintf(stderr, "Error: Memory allocation failed\n");
+        exit(1);
+    }
+
+    min_heap->size = 0;
+    min_heap->max_size = max_size;
+    min_heap->array = (HuffmanNode**)malloc(min_heap->max_size * sizeof(HuffmanNode*));
+
+    if (min_heap->array == NULL)
+    {
+        fprintf(stderr, "Error: Memory allocation failed\n");
+        exit(1);
+    }
+
+    for (int i = 0; i < min_heap->max_size; i++)
+    {
+        printf("min_heap[%d]: %p\n", i, min_heap->array[i]);
+    }
+
+    return min_heap;
+}
+
 HuffmanNode* build_huffman_tree(int *frequency_table)
 {
-    // build the Huffman tree
+    HuffmanNode *left;
+    HuffmanNode *right;
+    HuffmanNode *top;
+
+    // create a priority queue
+    MinHeap* priority_heap = create_min_heap(FREQUENCY_TABLE_SIZE);
 }
 
 void decode_message(FILE *file, HuffmanNode *root, int bitstream_length)

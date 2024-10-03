@@ -2,5 +2,8 @@
     "cSpell.words": [
         "bitstream",
         "Bitstream"
-    ]
+    ],
+    "files.associations": {
+        "vector": "c"
+    }
 }
