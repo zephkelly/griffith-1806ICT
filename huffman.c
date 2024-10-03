@@ -18,8 +18,13 @@ typedef struct MinHeap {
     HuffmanNode** array;
 } MinHeap;
 
+typedef struct CharacterFrequency {
+    char character;
+    int frequency;
+} CharacterFrequency;
+
 int* read_frequency_table(FILE *file);
-int* sort_frequency_table(int *frequency_table);
+CharacterFrequency* sort_frequency_table(int *frequency_table);
 
 int read_bitstream_length(FILE *file);
 
@@ -39,23 +44,18 @@ int main()
     }
 
     int *frequency_table = read_frequency_table(file);
-    int *sorted_table = sort_frequency_table(frequency_table);
-
-    //print sorted
-    for (int i = 0; i < FREQUENCY_TABLE_SIZE; i++)
-    {
-        printf("%c: %d\n", i, sorted_table[i]);
-    }
+    CharacterFrequency *sorted_table = sort_frequency_table(frequency_table);
 
     int bitstream_length = read_bitstream_length(file);
 
     HuffmanNode* root = build_huffman_tree(frequency_table);
 
     printf("Decoded message:\n");
-    decode_message(file, root, bitstream_length);
+    // decode_message(file, root, bitstream_length);
     printf("\n");
 
     free(frequency_table);
+    free(sorted_table);
     fclose(file);
     return 0;
 }
@@ -79,34 +79,6 @@ int* read_frequency_table(FILE *file)
     }
 
     return frequency_table;
-}
-
-int* sort_frequency_table(int *frequency_table)
-{
-    int *sorted_table = malloc(FREQUENCY_TABLE_SIZE * sizeof(int));
-
-    if (sorted_table == NULL)
-    {
-        fprintf(stderr, "Error: Memory allocation failed\n");
-        exit(1);
-    }
-
-    memcpy(sorted_table, frequency_table, FREQUENCY_TABLE_SIZE * sizeof(int));
-
-    for (int i = 0; i < FREQUENCY_TABLE_SIZE; i++)
-    {
-        for (int j = i + 1; j < FREQUENCY_TABLE_SIZE; j++)
-        {
-            if (sorted_table[i] > sorted_table[j])
-            {
-                int temp = sorted_table[i];
-                sorted_table[i] = sorted_table[j];
-                sorted_table[j] = temp;
-            }
-        }
-    }
-
-    return sorted_table;
 }
 
 int read_bitstream_length(FILE *file)
