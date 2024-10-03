@@ -129,6 +129,15 @@ int read_bitstream_length(FILE *file)
     return bitstream_length;
 }
 
+MinHeap* create_min_heap(unsigned capacity)
+{
+    MinHeap* minHeap = (MinHeap*)malloc(sizeof(MinHeap));
+    minHeap->size = 0;
+    minHeap->max_size = capacity;
+    minHeap->array = (HuffmanNode**)malloc(minHeap->max_size * sizeof(HuffmanNode*));
+    return minHeap;
+}
+
 HuffmanNode* new_huffman_node(char character, int frequency)
 {
     HuffmanNode* node = (HuffmanNode*)malloc(sizeof(HuffmanNode));
@@ -147,15 +156,6 @@ HuffmanNode* new_huffman_node(char character, int frequency)
     return node;
 }
 
-MinHeap* create_min_heap(unsigned capacity)
-{
-    MinHeap* minHeap = (MinHeap*)malloc(sizeof(MinHeap));
-    minHeap->size = 0;
-    minHeap->max_size = capacity;
-    minHeap->array = (HuffmanNode**)malloc(minHeap->max_size * sizeof(HuffmanNode*));
-    return minHeap;
-}
-
 HuffmanNode* build_huffman_tree(CharacterFrequency* sorted_table, int size)
 {
     HuffmanNode *left;
@@ -164,10 +164,10 @@ HuffmanNode* build_huffman_tree(CharacterFrequency* sorted_table, int size)
 
     MinHeap *min_heap = create_min_heap(FREQUENCY_TABLE_SIZE);
 
-    //print the min heap
-    for (int i = 0; i < FREQUENCY_TABLE_SIZE; i++)
+    // Populate min heap array with huffman nodes
+    for (int i = 0; i < size; ++i)
     {
-        printf("%c: %d\n", sorted_table[i].character, sorted_table[i].frequency);
+        min_heap->array[i] = new_huffman_node(sorted_table[i].character, sorted_table[i].frequency);
     }
 
     return NULL;
