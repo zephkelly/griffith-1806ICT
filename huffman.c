@@ -21,8 +21,9 @@ int read_bitstream_length(FILE *file);
 
 HuffmanNode* new_huffman_node(char character, int frequency);
 MinHeap* create_min_heap(unsigned capacity);
+void swap_nodes(HuffmanNode** a, HuffmanNode** b);
+void insert_min_heap_node(MinHeap* min_heap, HuffmanNode* node);
 HuffmanNode* build_huffman_tree(int *freq_table);
-
 
 void decode_message(FILE *file, HuffmanNode *root, int bitstream_length);
 
@@ -120,8 +121,20 @@ HuffmanNode* new_huffman_node(char character, int frequency)
     node->frequency = frequency;
     node->left = node->right = NULL;
 
-    printf("Character: %c, Frequency: %d\n", node->character, node->frequency);
     return node;
+}
+
+void insert_min_heap_node(MinHeap* min_heap, HuffmanNode* node)
+{
+    if (min_heap->size >= min_heap->max_size)
+    {
+        fprintf(stderr, "Error: Heap is full\n");
+        return;
+    }
+    
+    unsigned i = min_heap->size;
+    min_heap->array[i] = node;
+    min_heap->size++;
 }
 
 HuffmanNode* build_huffman_tree(int *frequency_table)
@@ -133,7 +146,7 @@ HuffmanNode* build_huffman_tree(int *frequency_table)
         if (frequency_table[i] > 0)
         {
             HuffmanNode* new_node = new_huffman_node(i, frequency_table[i]);
-            free(new_node);
+            insert_min_heap_node(min_heap, new_node);
         }
     }
 
