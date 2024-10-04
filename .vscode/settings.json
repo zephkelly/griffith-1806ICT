@@ -10,6 +10,7 @@
         "array": "c",
         "initializer_list": "c",
         "utility": "c",
-        "cstddef": "c"
+        "cstddef": "c",
+        "stdlib.h": "c"
     }
 }
