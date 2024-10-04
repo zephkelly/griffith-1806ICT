@@ -9,6 +9,19 @@ typedef struct {
     int i, j;
 } RC4Stream;
 
+void populate_state(unsigned char *state)
+{
+    for (int i = 0; i < STATE_ARRAY_SIZE; i++)
+    {
+        state[i] = i;
+    }
+}
+
+void init_stream(RC4Stream *stream, const unsigned char *key, int key_length)
+{
+
+}
+
 int main()
 {
     const char *key = "s5331799";
@@ -22,4 +35,7 @@ int main()
         fprintf(stderr, "Memory allocation failed\n");
         return 1;
     }
+
+    RC4Stream stream;
+    init_stream(&stream, (const unsigned char *)key, strlen(key));
 }
