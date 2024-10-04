@@ -6,8 +6,26 @@
 
 typedef struct {
     unsigned char state[STATE_ARRAY_SIZE];
-    int i, j;
+    int i;
+    int j;
 } RC4Stream;
+
+void key_scheduling(unsigned char *state, const unsigned char *key, int key_length)
+{
+    int j = 0;
+    
+    for (int i = 0; i < STATE_ARRAY_SIZE; i++)
+    {
+        const char current_state_byte = state[i];
+        const char current_key_byte = key[i % key_length];
+
+        j = (j + current_state_byte + current_key_byte) % STATE_ARRAY_SIZE;
+        
+        unsigned char temp = state[i];
+        state[i] = state[j];
+        state[j] = temp;
+    }
+}
 
 void populate_state(unsigned char *state)
 {
@@ -20,6 +38,7 @@ void populate_state(unsigned char *state)
 void init_stream(RC4Stream *stream, const unsigned char *key, int key_length)
 {
     populate_state(stream->state);
+    key_scheduling(stream->state, key, key_length);
 }
 
 int main()
