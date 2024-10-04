@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #define FREQUENCY_TABLE_SIZE 128
+#define MAX_QUEUE_SIZE (2 * FREQUENCY_TABLE_SIZE - 1)
 
 typedef struct HuffmanNode {
     char character;
@@ -12,51 +13,10 @@ typedef struct HuffmanNode {
     struct HuffmanNode *left, *right;
 } HuffmanNode;
 
-typedef struct MinHeap {
-    unsigned size;
-    unsigned max_size;
-    HuffmanNode** array;
-} MinHeap;
-
-typedef struct CharacterFrequency {
-    char character;
-    int frequency;
-} CharacterFrequency;
-
-int* read_frequency_table(FILE *file);
-CharacterFrequency* sort_frequency_table(int *frequency_table);
-
-int read_bitstream_length(FILE *file);
-
-HuffmanNode* new_huffman_node(char character, int frequency);
-HuffmanNode* build_huffman_tree(CharacterFrequency* sorted_table, int size);
-
-void decode_message(FILE *file, HuffmanNode *root, int bitstream_length);
-
-int main()
-{
-    FILE *file = fopen ("message.bin", "rb");
-
-    if (file == NULL)
-    {
-        fprintf(stderr, "Error: Could not open file: 'message.bin'\n");
-        return 1;
-    }
-
-    int *frequency_table = read_frequency_table(file);
-    CharacterFrequency *sorted_table = sort_frequency_table(frequency_table);
-
-    int bitstream_length = read_bitstream_length(file);
-
-    HuffmanNode* root = build_huffman_tree(sorted_table, FREQUENCY_TABLE_SIZE);
-
-    decode_message(file, root, bitstream_length);
-
-    free(frequency_table);
-    free(sorted_table);
-    fclose(file);
-    return 0;
-}
+typedef struct {
+    HuffmanNode* nodes[MAX_QUEUE_SIZE];
+    int size;
+} PriorityQueue;
 
 int* read_frequency_table(FILE *file)
 {
@@ -77,40 +37,16 @@ int* read_frequency_table(FILE *file)
         exit(1);
     }
 
-    return frequency_table;
-}
-
-CharacterFrequency* sort_frequency_table(int *frequency_table)
-{
-    CharacterFrequency* sorted_table = malloc(FREQUENCY_TABLE_SIZE * sizeof(CharacterFrequency));
-
-    if (sorted_table == NULL)
-    {
-        fprintf(stderr, "Error: Memory allocation failed\n");
-        exit(1);
-    }
-
+    //loop through the table and print the frequency of the ' ' character
     for (int i = 0; i < FREQUENCY_TABLE_SIZE; i++)
     {
-        sorted_table[i].character = (char)i;
-        sorted_table[i].frequency = frequency_table[i];
-    }
-
-    // Bubble sort in ascending order
-    for (int i = 0; i < FREQUENCY_TABLE_SIZE - 1; i++)
-    {
-        for (int j = 0; j < FREQUENCY_TABLE_SIZE - i - 1; j++)
+        if (i == ' ')
         {
-            if (sorted_table[j].frequency > sorted_table[j + 1].frequency)
-            {
-                CharacterFrequency temp = sorted_table[j];
-                sorted_table[j] = sorted_table[j + 1];
-                sorted_table[j + 1] = temp;
-            }
+            printf("Frequency of ' ' character: %d\n", frequency_table[i]);
         }
     }
 
-    return sorted_table;
+    return frequency_table;
 }
 
 int read_bitstream_length(FILE *file)
@@ -123,147 +59,86 @@ int read_bitstream_length(FILE *file)
         exit(1);
     }
 
-    printf("Bitstream length: %d\n", bitstream_length);
     return bitstream_length;
 }
 
-MinHeap* create_min_heap(unsigned capacity)
-{
-    MinHeap* minHeap = (MinHeap*)malloc(sizeof(MinHeap));
-    minHeap->size = 0;
-    minHeap->max_size = capacity;
-    minHeap->array = (HuffmanNode**)malloc(minHeap->max_size * sizeof(HuffmanNode*));
-    return minHeap;
-}
-
-HuffmanNode* new_huffman_node(char character, int frequency)
+HuffmanNode* create_node(char character, int frequency)
 {
     HuffmanNode* node = (HuffmanNode*)malloc(sizeof(HuffmanNode));
 
     if (node == NULL)
     {
-        fprintf(stderr, "Error: Memory allocation failed\n");
+        fprintf(stderr, "Error: Memory allocation failed for HuffmanNode\n");
         exit(1);
     }
 
     node->character = character;
     node->frequency = frequency;
-    node->left = NULL;
-    node->right = NULL;
-
+    node->left = node->right = NULL;
     return node;
 }
 
-void swap_nodes(HuffmanNode** a, HuffmanNode** b)
+void insert_node(PriorityQueue* queue, HuffmanNode* node)
 {
-    HuffmanNode* temp = *a;
-    *a = *b;
-    *b = temp;
-}
-
-void insert_min_heap(MinHeap* min_heap, HuffmanNode* node)
-{
-    if (min_heap->size >= min_heap->max_size)
+    if (queue->size >= MAX_QUEUE_SIZE)
     {
-        fprintf(stderr, "Error: Heap is full, cannot insert more elements\n");
-        return;
+        fprintf(stderr, "Error: Queue is full\n");
+        exit(1);
     }
 
-    unsigned current_index = min_heap->size;
-    min_heap->array[current_index] = node;
-    min_heap->size++;
-
-    while (current_index > 0)
+    int i = queue->size;
+    while (i > 0 && queue->nodes[i - 1]->frequency > node->frequency)
     {
-        unsigned int parent_index = (current_index - 1) / 2;
+        queue->nodes[i] = queue->nodes[i - 1];
+        i--;
+    }
 
-        HuffmanNode* current_node = min_heap->array[current_index];
-        HuffmanNode* parent_node = min_heap->array[parent_index];
+    queue->nodes[i] = node;
+    queue->size++;
+}
 
-        if (current_node->frequency > parent_node->frequency)
+HuffmanNode* build_huffman_tree(int* frequency_table, int size)
+{
+    PriorityQueue queue = {0};
+    queue.size = 0;
+
+    for (int i = 0; i < FREQUENCY_TABLE_SIZE; i++)
+    {
+        if (frequency_table[i] > 0)
         {
-            break;
-        }
-
-        swap_nodes(&min_heap->array[current_index], &min_heap->array[parent_index]);
-        current_index = parent_index;
-    }
-}
-
-
-void min_heapify(MinHeap* min_heap, int idx)
-{
-    int smallest = idx;
-    int left = 2 * idx + 1;
-    int right = 2 * idx + 2;
-
-    if (left < min_heap->size && min_heap->array[left]->frequency < min_heap->array[smallest]->frequency)
-        smallest = left;
-
-    if (right < min_heap->size && min_heap->array[right]->frequency < min_heap->array[smallest]->frequency)
-        smallest = right;
-
-    if (smallest != idx)
-    {
-        swap_nodes(&min_heap->array[idx], &min_heap->array[smallest]);
-        min_heapify(min_heap, smallest);
-    }
-}
-
-
-HuffmanNode* extract_min(MinHeap* minHeap)
-{
-    HuffmanNode* min = minHeap->array[0];
-    minHeap->array[0] = minHeap->array[minHeap->size - 1];
-    minHeap->size = minHeap->size - 1;
-    
-    min_heapify(minHeap, 0);
-
-    return min;
-}
-
-HuffmanNode* build_huffman_tree(CharacterFrequency* sorted_table, int size)
-{
-    int non_zero_count = 0;
-
-    for (int i = 0; i < size; i++)
-    {
-        if (sorted_table[i].frequency > 0)
-        {
-            non_zero_count++;
-        }
-    }
-    
-    MinHeap* min_heap = create_min_heap(non_zero_count);
-
-    // Only add non-zero frequency characters to the min heap
-    for (int i = 0, j = 0; i < size; i++)
-    {
-        if (sorted_table[i].frequency > 0)
-        {
-            HuffmanNode* new_node = new_huffman_node(sorted_table[i].character, sorted_table[i].frequency);
-            insert_min_heap(min_heap, new_node);
-            j++;
+            HuffmanNode* node = create_node((char)i, frequency_table[i]);
+            insert_node(&queue, node);
         }
     }
 
-    // Extract the lowest frequency nodes and combine into single internal node
-    while (min_heap->size > 1)
+    //loop through and print final state of queue
+    for (int i = 0; i < queue.size; i++)
     {
-        HuffmanNode* left = extract_min(min_heap);
-        HuffmanNode* right = extract_min(min_heap);
-
-        HuffmanNode* internal_node = new_huffman_node('$', left->frequency + right->frequency);
-        internal_node->left = left;
-        internal_node->right = right;
-
-        insert_min_heap(min_heap, internal_node);
+        printf("Character: %c, Frequency: %d\n", queue.nodes[i]->character, queue.nodes[i]->frequency);
     }
-
-    return extract_min(min_heap);
 }
 
 void decode_message(FILE *file, HuffmanNode *root, int bitstream_length)
 {
 
+}
+
+int main()
+{
+    FILE *file = fopen ("message.bin", "rb");
+
+    if (file == NULL)
+    {
+        fprintf(stderr, "Error: Could not open file: 'message.bin'\n");
+        return 1;
+    }
+
+    int *frequency_table = read_frequency_table(file);
+    int bitstream_length = read_bitstream_length(file);
+
+    HuffmanNode* root = build_huffman_tree(frequency_table, FREQUENCY_TABLE_SIZE);
+
+    free(frequency_table);
+    fclose(file);
+    return 0;
 }
