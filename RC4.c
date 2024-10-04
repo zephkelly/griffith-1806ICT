@@ -19,7 +19,7 @@ void populate_state(unsigned char *state)
 
 void init_stream(RC4Stream *stream, const unsigned char *key, int key_length)
 {
-
+    populate_state(stream->state);
 }
 
 int main()
@@ -27,8 +27,9 @@ int main()
     const char *key = "s5331799";
     const char *message = "A doctor who specializes in skin diseases will dream he has fallen asleep in front of the television. Later, he will wake up in front of the television but not remember his dream. If all the animas along the equator were capable of flattery then Thanksgiving and Halloween would fall on the same date. When I was 4 years old I watched my mother kill a spider with a tea cosy. Years later, I realized it was not a spider. It was my Uncle Harold.";
 
-    size_t text_length = strlen(message);
-    unsigned char *encoded_text = malloc(text_length);
+    size_t key_length = strlen(key);
+    size_t message_length = strlen(message);
+    unsigned char *encoded_text = malloc(message_length);
 
     if (encoded_text == NULL)
     {
@@ -37,5 +38,5 @@ int main()
     }
 
     RC4Stream stream;
-    init_stream(&stream, (const unsigned char *)key, strlen(key));
+    init_stream(&stream, (const unsigned char *)key, key_length);
 }
