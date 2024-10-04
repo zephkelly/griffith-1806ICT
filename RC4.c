@@ -59,7 +59,7 @@ unsigned char generate_key_byte(RC4Stream *stream)
     return stream->state[byte_index];
 }
 
-void rc4_process(RC4Stream *stream, const char *input, int input_length, char *output)
+void rc4_process(RC4Stream *stream, const unsigned char *input, int input_length, char *output)
 {
     for (size_t i = 0; i < input_length; i++)
     {
@@ -87,22 +87,25 @@ int main()
     }
 
     RC4Stream encrypt_stream;
-    init_stream(&encrypt_stream, key, key_length);
+    init_stream(&encrypt_stream, (const unsigned char *)key, key_length);
 
-    rc4_process(&encrypt_stream, message, message_length, encrypted_text);
+    rc4_process(&encrypt_stream, (const unsigned char *)message, message_length, encrypted_text);
 
     FILE *file = fopen("secret.dat", "wb");
-    
-    if (file == NULL) {
+
+    if (file == NULL)
+    {
         fprintf(stderr, "Failed to open file for writing\n");
         free(encrypted_text);
         return 1;
     }
 
-    fwrite(encrypted_text, 1, key_length, file);
+    fwrite(encrypted_text, 1, message_length, file);
     fclose(file);
     
-    free(encrypted_text);
     printf("Message encrypted and saved to secret.dat\n");
+
+    // Clean up
+    free(encrypted_text);
     return 0;
 }
