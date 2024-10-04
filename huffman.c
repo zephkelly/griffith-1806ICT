@@ -37,15 +37,6 @@ int* read_frequency_table(FILE *file)
         exit(1);
     }
 
-    //loop through the table and print the frequency of the ' ' character
-    for (int i = 0; i < FREQUENCY_TABLE_SIZE; i++)
-    {
-        if (i == ' ')
-        {
-            printf("Frequency of ' ' character: %d\n", frequency_table[i]);
-        }
-    }
-
     return frequency_table;
 }
 
@@ -97,6 +88,24 @@ void insert_node(PriorityQueue* queue, HuffmanNode* node)
     queue->size++;
 }
 
+HuffmanNode* extract_min(PriorityQueue* queue)
+{
+    if (queue->size == 0)
+    {
+        return NULL;
+    }
+
+    HuffmanNode* min = queue->nodes[0];
+    queue->size--;
+
+    for (int i = 0; i < queue->size; i++)
+    {
+        queue->nodes[i] = queue->nodes[i + 1];
+    }
+
+    return min;
+}
+
 HuffmanNode* build_huffman_tree(int* frequency_table, int size)
 {
     PriorityQueue queue = {0};
@@ -111,11 +120,14 @@ HuffmanNode* build_huffman_tree(int* frequency_table, int size)
         }
     }
 
-    //loop through and print final state of queue
-    for (int i = 0; i < queue.size; i++)
-    {
-        printf("Character: %c, Frequency: %d\n", queue.nodes[i]->character, queue.nodes[i]->frequency);
-    }
+    HuffmanNode* left = extract_min(&queue);
+    HuffmanNode* right = extract_min(&queue);
+
+    printf("Character: %c, Frequency: %d\n", left->character, left->frequency);
+    printf("Character: %c, Frequency: %d\n", right->character, right->frequency);
+
+
+    return (queue.size > 0) ? queue.nodes[0] : NULL;
 }
 
 void decode_message(FILE *file, HuffmanNode *root, int bitstream_length)
@@ -137,6 +149,8 @@ int main()
     int bitstream_length = read_bitstream_length(file);
 
     HuffmanNode* root = build_huffman_tree(frequency_table, FREQUENCY_TABLE_SIZE);
+
+    decode_message(file, root, bitstream_length);
 
     free(frequency_table);
     fclose(file);
