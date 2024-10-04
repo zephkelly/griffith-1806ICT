@@ -91,7 +91,18 @@ int main()
 
     rc4_process(&encrypt_stream, message, message_length, encrypted_text);
 
+    FILE *file = fopen("secret.dat", "wb");
+    
+    if (file == NULL) {
+        fprintf(stderr, "Failed to open file for writing\n");
+        free(encrypted_text);
+        return 1;
+    }
+
+    fwrite(encrypted_text, 1, key_length, file);
+    fclose(file);
     
     free(encrypted_text);
+    printf("Message encrypted and saved to secret.dat\n");
     return 0;
 }
