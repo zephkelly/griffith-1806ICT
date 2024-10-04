@@ -120,19 +120,59 @@ HuffmanNode* build_huffman_tree(int* frequency_table, int size)
         }
     }
 
-    HuffmanNode* left = extract_min(&queue);
-    HuffmanNode* right = extract_min(&queue);
+    while (queue.size > 1)
+    {
+        HuffmanNode* left = extract_min(&queue);
+        HuffmanNode* right = extract_min(&queue);
 
-    printf("Character: %c, Frequency: %d\n", left->character, left->frequency);
-    printf("Character: %c, Frequency: %d\n", right->character, right->frequency);
+        HuffmanNode* internal = create_node('$', left->frequency + right->frequency);
+        internal->left = left;
+        internal->right = right;
 
+        insert_node(&queue, internal);
+    }
 
     return (queue.size > 0) ? queue.nodes[0] : NULL;
 }
 
 void decode_message(FILE *file, HuffmanNode *root, int bitstream_length)
 {
+    HuffmanNode *current = root;
+    unsigned char byte;
+    int bits_read = 0;
+    int bit_position = 0;
 
+    while (bits_read < bitstream_length)
+    {
+        if (bit_position == 0 && bits_read < bitstream_length)
+        {
+            if (fread(&byte, sizeof(unsigned char), 1, file) != 1)
+            {
+                fprintf(stderr, "Error: Could not read byte from file\n");
+                return;
+            }
+        }
+
+        int bit = (byte >> (7 - bit_position)) & 1;
+
+        if (bit == 0)
+        {
+            current = current->left;
+        }
+        else
+        {
+            current = current->right;
+        }
+
+        if (current->left == NULL && current->right == NULL)
+        {
+            printf("%c", current->character);
+            current = root;
+        }
+
+        bits_read++;
+        bit_position = (bit_position + 1) % 8;
+    }
 }
 
 int main()
