@@ -40,12 +40,28 @@ void populate_state(unsigned char *state)
     }
 }
 
-void encode_stream(RC4Stream *stream, const unsigned char *key, int key_length)
+void init_stream(RC4Stream *stream, const unsigned char *key, int key_length)
 {
     populate_state(stream->state);
     key_scheduling(stream->state, key, key_length);
     stream->i = 0;
     stream->j = 0;
+}
+
+unsigned char generate_key_byte(RC4Stream *stream)
+{
+
+}
+
+void rc4_process(RC4Stream *stream, const unsigned char *input, int input_length, unsigned char *output)
+{
+    for (int i = 0; i < input_length; i++)
+    {
+        unsigned char key_byte = generate_key_byte(stream);
+
+        // XOR Operation
+        output[i] = input[i] ^ key_byte;
+    }
 }
 
 int main()
@@ -64,5 +80,7 @@ int main()
     }
 
     RC4Stream stream;
-    encode_stream(&stream, (const unsigned char *)key, key_length);
+    init_stream(&stream, (const unsigned char *)key, key_length);
+
+    rc4_process(&stream, (const unsigned char *)message, message_length, encoded_text);
 }
