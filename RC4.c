@@ -50,12 +50,18 @@ void init_stream(RC4Stream *stream, const unsigned char *key, int key_length)
 
 unsigned char generate_key_byte(RC4Stream *stream)
 {
-
+    stream->i = (stream->i + 1) % STATE_ARRAY_SIZE;
+    stream->j = (stream->j + stream->state[stream->i]) % STATE_ARRAY_SIZE;
+    
+    swap_bytes(&stream->state[stream->i], &stream->state[stream->j]);
+    
+    int byte_index = (stream->state[stream->i] + stream->state[stream->j]) % STATE_ARRAY_SIZE;
+    return stream->state[byte_index];
 }
 
-void rc4_process(RC4Stream *stream, const unsigned char *input, int input_length, unsigned char *output)
+void rc4_process(RC4Stream *stream, const char *input, int input_length, char *output)
 {
-    for (int i = 0; i < input_length; i++)
+    for (size_t i = 0; i < input_length; i++)
     {
         unsigned char key_byte = generate_key_byte(stream);
 
@@ -71,16 +77,21 @@ int main()
 
     size_t key_length = strlen(key);
     size_t message_length = strlen(message);
-    unsigned char *encoded_text = malloc(message_length);
 
-    if (encoded_text == NULL)
+    unsigned char *encrypted_text = malloc(message_length);
+
+    if (encrypted_text == NULL)
     {
         fprintf(stderr, "Memory allocation failed\n");
         return 1;
     }
 
-    RC4Stream stream;
-    init_stream(&stream, (const unsigned char *)key, key_length);
+    RC4Stream encrypt_stream;
+    init_stream(&encrypt_stream, key, key_length);
 
-    rc4_process(&stream, (const unsigned char *)message, message_length, encoded_text);
+    rc4_process(&encrypt_stream, message, message_length, encrypted_text);
+
+    
+    free(encrypted_text);
+    return 0;
 }
