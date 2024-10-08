@@ -1,0 +1,11 @@
+Praise the flying spaghetti monster, you were able to decode this message. 
+
+Wait, if a schmuck like you was able to do it, nearly anyone could.. argh, how can I keep a secret?
+
+Ok, I need you to help me out here. I have a message that I need to send... SECRETLY. 
+
+Could you please implement RC4 encoding and create a file (secret.dat) with the below message encoded using RC4. Use your sNumber (in the format of s1234567) as the key for your RC4 encoding. That way only you and I will be able to decode it. The same code you use to encrypt the message can also be run on the encrypted message to decrypt it - when XORing text with the generated keystream, RC4 is self-inverting. 
+
+The message to encode is below. Good luck.
+
+A doctor who specializes in skin diseases will dream he has fallen asleep in front of the television. Later, he will wake up in front of the television but not remember his dream. If all the animas along the equator were capable of flattery then Thanksgiving and Halloween would fall on the same date. When I was 4 years old I watched my mother kill a spider with a tea cosy. Years later, I realized it was not a spider. It was my Uncle Harold.

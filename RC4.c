@@ -72,8 +72,8 @@ void rc4_process(RC4Stream *stream, const unsigned char *input, int input_length
 
 int main()
 {
-    const unsigned char *key = "s5331799";
-    const unsigned char *message = "A doctor who specializes in skin diseases will dream he has fallen asleep in front of the television. Later, he will wake up in front of the television but not remember his dream. If all the animas along the equator were capable of flattery then Thanksgiving and Halloween would fall on the same date. When I was 4 years old I watched my mother kill a spider with a tea cosy. Years later, I realized it was not a spider. It was my Uncle Harold.";
+    const char *key = "s5331799";
+    const char *message = "A doctor who specializes in skin diseases will dream he has fallen asleep in front of the television. Later, he will wake up in front of the television but not remember his dream. If all the animas along the equator were capable of flattery then Thanksgiving and Halloween would fall on the same date. When I was 4 years old I watched my mother kill a spider with a tea cosy. Years later, I realized it was not a spider. It was my Uncle Harold.";
 
     size_t key_length = strlen(key);
     size_t message_length = strlen(message);
@@ -87,8 +87,9 @@ int main()
     }
 
     RC4Stream encrypt_stream;
-    init_stream(&encrypt_stream, key, key_length);
-    rc4_process(&encrypt_stream, message, message_length, encrypted_text);
+    init_stream(&encrypt_stream, (const unsigned char *)key, key_length);
+
+    rc4_process(&encrypt_stream, (const unsigned char *)message, message_length, encrypted_text);
 
     FILE *file = fopen("secret.dat", "wb");
 
@@ -104,6 +105,7 @@ int main()
     
     printf("Message encrypted and saved to secret.dat\n");
 
+    // Clean up
     free(encrypted_text);
     return 0;
 }
